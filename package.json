@@ -15,5 +15,8 @@
   },
   "engines": {
     "node": "10.x"
+  },
+  "dependencies": {
+    "firebase-admin": "^8.3.0"
   }
 }

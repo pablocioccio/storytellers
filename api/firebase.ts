@@ -1,7 +1,17 @@
 import { NowRequest, NowResponse } from '@now/node';
 import * as firebaseAdmin from 'firebase-admin';
+import authenticator = require('../lib/authenticator');
 
 export default async (request: NowRequest, response: NowResponse) => {
+
+    console.log(request.headers);
+
+    try {
+        const payload = await authenticator.handler(request.headers);
+    } catch (error) {
+        response.status(401).json({error: error.message});
+        return;
+    }
 
     const params = {
         clientEmail: '***REMOVED***',
@@ -26,5 +36,5 @@ export default async (request: NowRequest, response: NowResponse) => {
         username: 'Test',
     });
 
-    response.status(200).send('Congrats!');
+    response.status(200).send({ Authorized: true });
 };

@@ -9,7 +9,9 @@
   "author": "Pablo N. Cioccio",
   "license": "ISC",
   "devDependencies": {
-    "@now/node": "^0.11.1",
+    "@firebase/app-types": "0.x",
+    "@now/node": "canary",
+    "@types/jsonwebtoken": "^8.3.3",
     "tslint": "^5.18.0",
     "typescript": "^3.5.3"
   },
@@ -17,6 +19,9 @@
     "node": "10.x"
   },
   "dependencies": {
-    "firebase-admin": "^8.3.0"
+    "@firebase/app": "0.x",
+    "firebase-admin": "^8.3.0",
+    "jsonwebtoken": "^8.5.1",
+    "jwks-rsa": "^1.6.0"
   }
 }

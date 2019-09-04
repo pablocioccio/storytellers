@@ -14,7 +14,8 @@ export class AuthenticationService {
     createAuth0Client({
       domain: 'dev--cxipk7a.auth0.com',
       client_id: 'giE2A8lRcJ3MTVBmn0Nj6TSflB6iJYHo',
-      redirect_uri: `${window.location.origin}/callback`
+      redirect_uri: `${window.location.origin}/callback`,
+      audience: 'https://test-api.pablocioccio.now.sh'
     })
   ) as Observable<Auth0Client>).pipe(
     shareReplay(1), // Every subscription receives the same shared value
@@ -101,10 +102,10 @@ export class AuthenticationService {
       concatMap(() => {
         // Redirect callback complete; create stream
         // returning user data and authentication status
-        return combineLatest(
+        return combineLatest([
           this.getUser$(),
           this.isAuthenticated$
-        );
+        ]);
       })
     );
     // Subscribe to authentication completion observable
@@ -127,6 +128,12 @@ export class AuthenticationService {
         returnTo: `${window.location.origin}`
       });
     });
+  }
+
+  getTokenSilently$(options?): Observable<string> {
+    return this.auth0Client$.pipe(
+      concatMap((client: Auth0Client) => from(client.getTokenSilently(options)))
+    );
   }
 
 }

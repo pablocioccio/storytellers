@@ -4,11 +4,12 @@ import authenticator = require('../lib/authenticator');
 
 export default async (request: NowRequest, response: NowResponse) => {
 
-    console.log(request.headers);
+    let userInfo = {};
 
     try {
-        const payload = await authenticator.handler(request.headers);
+        userInfo = await authenticator.handler(request.headers);
     } catch (error) {
+        console.log(error);
         response.status(401).json({error: error.message});
         return;
     }
@@ -36,5 +37,5 @@ export default async (request: NowRequest, response: NowResponse) => {
         username: 'Test',
     });
 
-    response.status(200).send({ Authorized: true });
+    response.status(200).send(userInfo);
 };

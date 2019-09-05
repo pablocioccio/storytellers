@@ -1,16 +1,19 @@
 import { NowRequest, NowResponse } from '@now/node';
 import * as firebaseAdmin from 'firebase-admin';
 import authenticator = require('../lib/authenticator');
+import userinfo = require('../lib/userinfo');
 
 export default async (request: NowRequest, response: NowResponse) => {
 
     let userInfo = {};
 
     try {
-        userInfo = await authenticator.handler(request.headers);
+        const payload = await authenticator.handler(request.headers);
+        console.log(`User ID: ${payload.sub}`);
+        userInfo = await userinfo.retrieve(request.headers);
     } catch (error) {
         console.log(error);
-        response.status(401).json({error: error.message});
+        response.status(401).json({ error: error.message });
         return;
     }
 

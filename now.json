@@ -1,0 +1,6 @@
+{
+    "version": 2,
+    "env": {
+        "AUTHENTICATION_SERVER": "https://dev--cxipk7a.auth0.com"
+    }
+}

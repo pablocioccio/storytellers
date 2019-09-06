@@ -1,6 +1,8 @@
 {
     "version": 2,
     "env": {
-        "AUTHENTICATION_SERVER": "https://dev--cxipk7a.auth0.com"
+        "authentication_domain": "@authentication_domain",
+        "authentication_mgmt_api_clientId": "@authentication_mgmt_api_clientId",
+        "authentication_mgmt_api_secret": "@authentication_mgmt_api_secret"
     }
 }

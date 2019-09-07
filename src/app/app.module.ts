@@ -9,6 +9,8 @@ import { InterceptorService } from './authentication/interceptor.service';
 import { FirebaseComponent } from './firebase/firebase.component';
 import { NavbarComponent } from './navbar/navbar.component';
 import { ProfileComponent } from './profile/profile.component';
+import { SearchComponent } from './users/search/search.component';
+import { FormsModule } from '@angular/forms';
 
 
 @NgModule({
@@ -17,12 +19,14 @@ import { ProfileComponent } from './profile/profile.component';
     NavbarComponent,
     CallbackComponent,
     ProfileComponent,
-    FirebaseComponent
+    FirebaseComponent,
+    SearchComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
+    FormsModule,
     NgbModule
   ],
   providers: [

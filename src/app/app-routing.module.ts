@@ -4,6 +4,7 @@ import { AuthGuard } from './authentication/authentication.guard';
 import { CallbackComponent } from './authentication/callback/callback.component';
 import { ProfileComponent } from './profile/profile.component';
 import { FirebaseComponent } from './firebase/firebase.component';
+import { SearchComponent } from './users/search/search.component';
 
 const routes: Routes = [
   {
@@ -13,6 +14,11 @@ const routes: Routes = [
   {
     path: 'profile',
     component: ProfileComponent,
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'users/search',
+    component: SearchComponent,
     canActivate: [AuthGuard]
   },
   {

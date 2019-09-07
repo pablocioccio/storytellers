@@ -1,14 +1,15 @@
-import { BrowserModule } from '@angular/platform-browser';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { NgModule } from '@angular/core';
-
+import { BrowserModule } from '@angular/platform-browser';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { NavbarComponent } from './navbar/navbar.component';
 import { CallbackComponent } from './authentication/callback/callback.component';
-import { ProfileComponent } from './profile/profile.component';
-import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { InterceptorService } from './authentication/interceptor.service';
 import { FirebaseComponent } from './firebase/firebase.component';
+import { NavbarComponent } from './navbar/navbar.component';
+import { ProfileComponent } from './profile/profile.component';
+
 
 @NgModule({
   declarations: [
@@ -21,7 +22,8 @@ import { FirebaseComponent } from './firebase/firebase.component';
   imports: [
     BrowserModule,
     AppRoutingModule,
-    HttpClientModule
+    HttpClientModule,
+    NgbModule
   ],
   providers: [
     {

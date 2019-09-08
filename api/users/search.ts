@@ -6,21 +6,18 @@ import { AppMetadata, ManagementClient, User, UserMetadata } from 'auth0';
  */
 export default async (request: NowRequest, response: NowResponse) => {
 
-  const { term = '' } = request.query;
+  let { term = '' } = request.query;
+  term = Array.isArray(term) ? term.join(' ').trim() : term.trim();
 
   if (term === '') {
     response.status(400).json({ error: 'Missing or empty \'term\' parameter' });
     return;
   }
 
-  /** For each word, search the name and email fields */
-  const buildQuery = (words: string) => {
-    return words.split(' ')
-      .map((word: string) => `(name:${word}* OR email:${word}*)`)
-      .join(' AND ');
-  };
-
-  const query = Array.isArray(term) ? term.map((elem: string) => buildQuery(elem)).join(' AND ') : buildQuery(term);
+  const query = term.split(' ')
+    .filter((word: string) => word !== '')
+    .map((word: string) => `(name:${word}* OR email:${word}*)`)
+    .join(' AND ');
 
   const managementClient: ManagementClient = new ManagementClient({
     clientId: `${process.env.authentication_mgmt_api_clientid}`,

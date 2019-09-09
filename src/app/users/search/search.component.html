@@ -1,19 +1,19 @@
-A typeahead example that gets values from the <code>WikipediaService</code>
-<ul>
-  <li>remote data retrieval</li>
-  <li><code>debounceTime</code> operator</li>
-  <li><code>tap</code> operator</li>
-  <li><code>distinctUntilChanged</code> operator</li>
-  <li><code>switchMap</code> operator</li>
-  <li><code>catch</code> operator to display an error message in case of connectivity issue</li>
-</ul>
+<ng-template #rt let-r="result" let-t="term">
+  <div class="d-flex align-items-center" style="height: 60px;">
+    <img [src]="r['picture']" class="rounded-circle m-2" width="50px;">
+    <ngb-highlight [result]="r.name" [term]="t"></ngb-highlight>
+    (<ngb-highlight [result]="r.email" [term]="t"></ngb-highlight>)
+  </div>
+</ng-template>
 
 <div class="form-group">
-  <label for="typeahead-http">Search for a wiki page:</label>
-  <input id="typeahead-http" type="text" class="form-control" [class.is-invalid]="searchFailed" [(ngModel)]="model" [ngbTypeahead]="search" placeholder="Wikipedia search" />
+  <label for="typeahead-http">Search users:</label>
+  <input id="typeahead-http" type="text" [class.is-invalid]="searchFailed" [(ngModel)]="selectedUser"
+    [ngbTypeahead]="search" [resultTemplate]="rt" [inputFormatter]="userInputFormatter" class="mx-2"
+    placeholder="User search" />
   <span *ngIf="searching">searching...</span>
-  <div class="invalid-feedback" *ngIf="searchFailed">Sorry, suggestions could not be loaded.</div>
+  <div class="invalid-feedback" *ngIf="searchFailed">Sorry, users could not be loaded.</div>
 </div>
 
 <hr>
-<pre>Model: {{ model | json }}</pre>
+<pre>Model: {{ selectedUser | json }}</pre>

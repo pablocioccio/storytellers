@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { catchError, debounceTime, distinctUntilChanged, switchMap, tap } from 'rxjs/operators';
 import { UserService } from '../user.service';
+import { User } from '../model/user';
 
 @Component({
   selector: 'app-user-search',
@@ -10,7 +11,7 @@ import { UserService } from '../user.service';
 })
 export class SearchComponent implements OnInit {
 
-  model: any;
+  selectedUser: User;
   searching = false;
   searchFailed = false;
 
@@ -25,7 +26,7 @@ export class SearchComponent implements OnInit {
       distinctUntilChanged(),
       tap(() => this.searching = true),
       switchMap(term =>
-        this.userService.wikiSearch(term).pipe(
+        this.userService.search(term).pipe(
           tap(() => this.searchFailed = false),
           catchError(() => {
             this.searchFailed = true;
@@ -35,5 +36,9 @@ export class SearchComponent implements OnInit {
       tap(() => this.searching = false)
     )
 
+
+  userInputFormatter(user: User) {
+    return user.name;
+  }
 
 }

@@ -1,9 +1,27 @@
-<header>
-    <button (click)="auth.login()" *ngIf="!auth.loggedIn">Log In</button>
-    <button (click)="auth.logout()" *ngIf="auth.loggedIn">Log Out</button>
-    <br>
-    <a routerLink="/">Home</a>&nbsp;
-    <a routerLink="profile" *ngIf="auth.loggedIn">Profile</a>&nbsp;
-    <a routerLink="firebase-api" *ngIf="auth.loggedIn">External API</a>&nbsp;
-    <a routerLink="users/search" *ngIf="auth.loggedIn">Users Search</a>&nbsp;
-</header>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <a class="navbar-brand" href="#">
+    <img class="rounded-circle" src="https://secure.meetupstatic.com/photos/member/7/b/5/e/highres_240151582.jpeg"
+      width="60" height="60" alt="Home">
+  </a>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+    aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item">
+        <a class="nav-link" routerLink="profile" routerLinkActive="active" *ngIf="auth.loggedIn">Profile</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" routerLink="firebase-api" routerLinkActive="active" *ngIf="auth.loggedIn">External API</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" routerLink="games/create" routerLinkActive="active">Games</a>
+      </li>
+    </ul>
+    <button class="btn btn-outline-success my-2 my-sm-0" (click)="auth.login()" *ngIf="!auth.loggedIn">Log In</button>
+    <button class="btn btn-outline-success my-2 my-sm-0" (click)="auth.logout()" *ngIf="auth.loggedIn">Log Out</button>
+  </div>
+</nav>

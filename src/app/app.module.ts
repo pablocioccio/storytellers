@@ -11,6 +11,7 @@ import { NavbarComponent } from './navbar/navbar.component';
 import { ProfileComponent } from './profile/profile.component';
 import { SearchComponent } from './users/search/search.component';
 import { FormsModule } from '@angular/forms';
+import { CreateComponent } from './games/create/create.component';
 
 
 @NgModule({
@@ -20,7 +21,8 @@ import { FormsModule } from '@angular/forms';
     CallbackComponent,
     ProfileComponent,
     FirebaseComponent,
-    SearchComponent
+    SearchComponent,
+    CreateComponent
   ],
   imports: [
     BrowserModule,
@@ -30,11 +32,11 @@ import { FormsModule } from '@angular/forms';
     NgbModule
   ],
   providers: [
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: InterceptorService,
-      multi: true
-    }
+    // {
+    //   provide: HTTP_INTERCEPTORS,
+    //   useClass: InterceptorService,
+    //   multi: true
+    // }
   ],
   bootstrap: [AppComponent]
 })

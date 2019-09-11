@@ -2,9 +2,9 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AuthGuard } from './authentication/authentication.guard';
 import { CallbackComponent } from './authentication/callback/callback.component';
-import { ProfileComponent } from './profile/profile.component';
 import { FirebaseComponent } from './firebase/firebase.component';
-import { SearchComponent } from './users/search/search.component';
+import { CreateComponent } from './games/create/create.component';
+import { ProfileComponent } from './profile/profile.component';
 
 const routes: Routes = [
   {
@@ -17,9 +17,8 @@ const routes: Routes = [
     canActivate: [AuthGuard]
   },
   {
-    path: 'users/search',
-    component: SearchComponent,
-    canActivate: [AuthGuard]
+    path: 'games/create',
+    component: CreateComponent
   },
   {
     path: 'firebase-api',

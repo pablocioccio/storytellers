@@ -1,8 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { catchError, debounceTime, distinctUntilChanged, switchMap, tap } from 'rxjs/operators';
-import { UserService } from '../user.service';
 import { User } from '../model/user';
+import { UserService } from '../user.service';
 
 @Component({
   selector: 'app-user-search',
@@ -11,7 +11,9 @@ import { User } from '../model/user';
 })
 export class SearchComponent implements OnInit {
 
-  selectedUser: User;
+  @Output() selectUser: EventEmitter<User> = new EventEmitter();
+
+  model: any;
   searching = false;
   searchFailed = false;
 
@@ -39,6 +41,15 @@ export class SearchComponent implements OnInit {
 
   userInputFormatter(user: User) {
     return user.name;
+  }
+
+  userSelected(event: { item: User, preventDefault: () => void }) {
+    // Emit an event with the selected user
+    this.selectUser.emit(event.item);
+    /* Prevent selection from happening, so that we can clear the input
+     and avoid the asynchronous call that would populate it back again */
+    event.preventDefault();
+    this.model = null;
   }
 
 }

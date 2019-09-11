@@ -1,3 +1,4 @@
+<ngb-alert *ngIf="errorMessage" [type]="'danger'" (close)="errorMessage = null">{{ errorMessage }}</ngb-alert>
 <app-user-search (selectUser)="userSelected($event)"></app-user-search>
 <table class="table table-hover">
   <thead>

@@ -12,6 +12,7 @@ import { ProfileComponent } from './profile/profile.component';
 import { SearchComponent } from './users/search/search.component';
 import { FormsModule } from '@angular/forms';
 import { CreateComponent } from './games/create/create.component';
+import { WelcomeComponent } from './welcome/welcome.component';
 
 
 @NgModule({
@@ -22,7 +23,8 @@ import { CreateComponent } from './games/create/create.component';
     ProfileComponent,
     FirebaseComponent,
     SearchComponent,
-    CreateComponent
+    CreateComponent,
+    WelcomeComponent
   ],
   imports: [
     BrowserModule,

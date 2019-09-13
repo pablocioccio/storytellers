@@ -5,6 +5,7 @@ import { CallbackComponent } from './authentication/callback/callback.component'
 import { FirebaseComponent } from './firebase/firebase.component';
 import { CreateComponent } from './games/create/create.component';
 import { ProfileComponent } from './profile/profile.component';
+import { WelcomeComponent } from './welcome/welcome.component';
 
 const routes: Routes = [
   {
@@ -17,14 +18,24 @@ const routes: Routes = [
     canActivate: [AuthGuard]
   },
   {
-    path: 'games/create',
-    component: CreateComponent
-  },
-  {
     path: 'firebase-api',
     component: FirebaseComponent,
     canActivate: [AuthGuard]
-  }
+  },
+  {
+    path: 'games/create',
+    component: CreateComponent,
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'welcome',
+    component: WelcomeComponent
+  },
+  {
+    path: '',
+    redirectTo: '/welcome',
+    pathMatch: 'full'
+  },
 ];
 
 @NgModule({

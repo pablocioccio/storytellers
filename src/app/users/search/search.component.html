@@ -1,18 +1,15 @@
 <ng-template #rt let-r="result" let-t="term">
   <div class="d-flex align-items-center" style="height: 45px;">
     <img [src]="r['picture']" class="rounded-circle" width="40px;">
-    <ngb-highlight [result]="r.name" [term]="t" class="m-2"></ngb-highlight>
-    (<ngb-highlight [result]="r.email" [term]="t"></ngb-highlight>)
+    <ngb-highlight [class]="'m-2'" [result]="r.name" [term]="t"></ngb-highlight>
+    <ngb-highlight [class]="'d-none d-sm-block'" [result]="' (' + r.email + ') '" [term]="t"></ngb-highlight>
   </div>
 </ng-template>
 
 <div class="input-group">
-  <div class="input-group-prepend">
-    <span class="input-group-text" id="user-search-addon">Search for users:</span>
-  </div>
   <input id="users-typeahead" type="text" class="form-control" [class.is-invalid]="searchFailed" [(ngModel)]="model"
     [ngbTypeahead]="search" [resultTemplate]="rt" [inputFormatter]="userInputFormatter"
-    (selectItem)="userSelected($event)" aria-label="Search for users" aria-describedby="user-search-addon">
+    placeholder="Start typing to find players" (selectItem)="userSelected($event)" aria-label="Search for users">
   <div *ngIf="searching" class="spinner-border text-danger mx-2" role="status">
     <span class="sr-only">Searching...</span>
   </div>

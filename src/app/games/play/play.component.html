@@ -1,0 +1,42 @@
+<form [formGroup]="gameForm" (ngSubmit)="onSubmit()">
+
+  <div class="input-group mb-3">
+    <div class="input-group-prepend">
+      <span class="input-group-text">... blah blah blah</span>
+    </div>
+    <textarea id="text" class="form-control"
+      [class.is-invalid]="gameForm.controls['text'].errors && (gameForm.controls['text'].dirty || gameForm.controls['text'].touched)"
+      [class.is-valid]="gameForm.controls['text'].valid && (gameForm.controls['text'].dirty || gameForm.controls['text'].touched)"
+      formControlName="text" aria-label="Text area" placeholder="Start typing"></textarea>
+    <div class="invalid-feedback">
+      <ng-container *ngIf="gameForm.controls['text'].errors?.minWords">
+        You need at least
+        {{gameForm.controls['text'].errors.minWords.required - gameForm.controls['text'].errors.minWords.current}}
+        more word(s).
+      </ng-container>
+    </div>
+  </div>
+
+  <div class="d-flex mb-3">
+    <div class="p-2">
+      <b ngbTooltip="Up to a third of the whole content">Slide to reveal more</b>
+    </div>
+    <div class="p-2 flex-grow-1">
+      <input type="range" class="custom-range" id="customRangeId" formControlName="lastWordsRange"
+        [attr.min]="minLastWords" [attr.max]="maxLastWords">
+    </div>
+  </div>
+
+  <div #lastWordsContainer="ngbTooltip"
+    class="shadow text-right text-break p-3 mb-5 bg-white rounded border border-info"
+    ngbTooltip="This is what the next player will see" triggers="manual">
+    ... {{gameForm.value.lastWords}}
+  </div>
+
+  <div class="text-center">
+    <button type="submit" class="btn btn-primary" [disabled]="!gameForm.valid">
+      Send
+    </button>
+  </div>
+
+</form>

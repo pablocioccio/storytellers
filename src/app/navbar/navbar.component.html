@@ -11,6 +11,9 @@
     <li class="nav-item">
       <a class="nav-link" routerLink="games/create" routerLinkActive="active" *ngIf="auth.loggedIn">Games</a>
     </li>
+    <li class="nav-item">
+      <a class="nav-link" routerLink="games/play" routerLinkActive="active">Play</a>
+    </li>
   </ul>
   <button class="btn btn btn-outline-info my-2 my-sm-0" (click)="auth.login()" *ngIf="!auth.loggedIn">Log In</button>
   <button class="btn btn btn-outline-info my-2 my-sm-0" (click)="auth.logout()" *ngIf="auth.loggedIn">Log Out</button>

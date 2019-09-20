@@ -6,6 +6,7 @@ import { FirebaseComponent } from './firebase/firebase.component';
 import { CreateComponent } from './games/create/create.component';
 import { ProfileComponent } from './profile/profile.component';
 import { WelcomeComponent } from './welcome/welcome.component';
+import { PlayComponent } from './games/play/play.component';
 
 const routes: Routes = [
   {
@@ -26,6 +27,10 @@ const routes: Routes = [
     path: 'games/create',
     component: CreateComponent,
     canActivate: [AuthGuard]
+  },
+  {
+    path: 'games/play',
+    component: PlayComponent
   },
   {
     path: 'welcome',

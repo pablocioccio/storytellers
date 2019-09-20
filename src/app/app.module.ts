@@ -1,17 +1,17 @@
-import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { CallbackComponent } from './authentication/callback/callback.component';
-import { InterceptorService } from './authentication/interceptor.service';
 import { FirebaseComponent } from './firebase/firebase.component';
+import { CreateComponent } from './games/create/create.component';
+import { PlayComponent } from './games/play/play.component';
 import { NavbarComponent } from './navbar/navbar.component';
 import { ProfileComponent } from './profile/profile.component';
 import { SearchComponent } from './users/search/search.component';
-import { FormsModule } from '@angular/forms';
-import { CreateComponent } from './games/create/create.component';
 import { WelcomeComponent } from './welcome/welcome.component';
 
 
@@ -24,14 +24,16 @@ import { WelcomeComponent } from './welcome/welcome.component';
     FirebaseComponent,
     SearchComponent,
     CreateComponent,
-    WelcomeComponent
+    WelcomeComponent,
+    PlayComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
     FormsModule,
-    NgbModule
+    NgbModule,
+    ReactiveFormsModule
   ],
   providers: [
     // {

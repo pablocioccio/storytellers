@@ -1,9 +1,10 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { User } from 'src/app/users/model/user';
-import { Subject, Observable, Subscription } from 'rxjs';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { FormControl } from '@angular/forms';
+import { Router } from '@angular/router';
+import { Subject, Subscription } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import { AuthenticationService } from 'src/app/authentication/authentication.service';
-import { Router } from '@angular/router';
+import { User } from 'src/app/users/model/user';
 import { GameService } from '../game.service';
 
 @Component({
@@ -14,9 +15,13 @@ import { GameService } from '../game.service';
 export class CreateComponent implements OnInit, OnDestroy {
 
   MAX_PLAYERS = 4; // Without considering the current user
+  MIN_ROUNDS = 3;
+  MAX_ROUNDS = 20;
 
   currentUser: User; // The current user is always part of the game
   users: User[] = []; // List of selected users
+  numberOfRounds = new FormControl(this.MIN_ROUNDS);
+
 
   errorMessage: string; // Error message used for alerts
   private errorSubject = new Subject<string>();
@@ -62,7 +67,7 @@ export class CreateComponent implements OnInit, OnDestroy {
     this.gameCreationSubmitted = true;
 
     // TODO: validate model
-    this.gameCreationSubscription = this.gameService.createGame([this.currentUser, ...this.users]).subscribe(
+    this.gameCreationSubscription = this.gameService.createGame([this.currentUser, ...this.users], this.numberOfRounds.value).subscribe(
       (data) => {
         console.log(data);
         this.router.navigate(['/welcome']);

@@ -1,4 +1,4 @@
-<form [formGroup]="gameForm" (ngSubmit)="onSubmit()">
+<form [formGroup]="gameForm" (ngSubmit)="onSubmit()" *ngIf="game$ | async as game">
 
   <div class="input-group mb-3">
     <div class="input-group-prepend">
@@ -22,7 +22,7 @@
       <b ngbTooltip="Up to a third of the whole content">Slide to reveal more</b>
     </div>
     <div class="p-2 flex-grow-1">
-      <input type="range" class="custom-range" id="customRangeId" formControlName="lastWordsRange"
+      <input type="range" class="custom-range" id="lastWordsRange" formControlName="lastWordsRange"
         [attr.min]="minLastWords" [attr.max]="maxLastWords">
     </div>
   </div>

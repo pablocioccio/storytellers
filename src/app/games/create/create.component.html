@@ -39,8 +39,19 @@
     </tbody>
   </table>
 
+  <div class="d-flex mb-3">
+    <div class="p-2">
+      <b>Rounds: {{numberOfRounds.value}}</b>
+    </div>
+    <div class="p-2 flex-grow-1">
+      <input type="range" class="custom-range" id="numberOfRounds" [formControl]="numberOfRounds"
+        [attr.min]="MIN_ROUNDS" [attr.max]="MAX_ROUNDS">
+    </div>
+  </div>
+
   <div class="text-center">
-    <button type="button" class="btn btn-primary" [disabled]="users.length < 1 || users.length > MAX_PLAYERS" (click)="createGame();">
+    <button type="button" class="btn btn-primary" [disabled]="users.length < 1 || users.length > MAX_PLAYERS"
+      (click)="createGame();">
       <span *ngIf="gameCreationSubmitted" class="spinner-border spinner-border-sm" role="status"
         aria-hidden="true"></span>
       Create Game

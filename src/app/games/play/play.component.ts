@@ -1,7 +1,11 @@
 import { Component, OnInit, OnDestroy, ViewChild, AfterViewInit } from '@angular/core';
 import { FormControl, FormGroup, Validators, AbstractControl, ValidatorFn } from '@angular/forms';
-import { Subscription } from 'rxjs';
+import { Subscription, Observable } from 'rxjs';
 import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
+import { GameService } from '../game.service';
+import { ParamMap, ActivatedRoute } from '@angular/router';
+import { switchMap } from 'rxjs/operators';
+import { Game } from '../model/game';
 
 @Component({
   selector: 'app-play',
@@ -9,6 +13,8 @@ import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
   styleUrls: ['./play.component.scss']
 })
 export class PlayComponent implements OnInit, AfterViewInit, OnDestroy {
+
+  game$: Observable<Game>;
 
   @ViewChild('lastWordsContainer', { static: false }) public lastWordsContainerTooltip: NgbTooltip;
 
@@ -24,9 +30,14 @@ export class PlayComponent implements OnInit, AfterViewInit, OnDestroy {
   textChangeSubscription: Subscription;
   lastWordsCountSubscription: Subscription;
 
-  constructor() { }
+  constructor(private gameService: GameService, private route: ActivatedRoute) { }
 
   ngOnInit() {
+    this.game$ = this.route.paramMap.pipe(
+      switchMap((params: ParamMap) =>
+        this.gameService.getGame(params.get('id')))
+    );
+
     this.textChangeSubscription = this.gameForm.get('text').valueChanges.subscribe((text: string) => {
       const lastWordsCount: number = this.gameForm.get('lastWordsRange').value;
       this.updateLastWords(text, lastWordsCount);
@@ -42,7 +53,7 @@ export class PlayComponent implements OnInit, AfterViewInit, OnDestroy {
     this.lastWordsContainerTooltip.open();
     setTimeout(() => {
       this.lastWordsContainerTooltip.close();
-    }, 5000);
+    }, 3000);
   }
 
   updateLastWords(text: string, lastWordsCount: number) {

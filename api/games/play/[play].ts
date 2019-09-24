@@ -58,7 +58,7 @@ export default async (request: NowRequest, response: NowResponse) => {
         updates[`/games/${game.id}/firstWords`] = '';
         updates[`/games/${game.id}/completed`] = true;
     } else {
-        updates[`/games/${game.id}/currentPhraseNumber`] = ++game.currentPhraseNumber;
+        updates[`/games/${game.id}/currentPhraseNumber`] = game.currentPhraseNumber + 1;
         updates[`/games/${game.id}/firstWords`] = request.body.lastWords;
     }
 

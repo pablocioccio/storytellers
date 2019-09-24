@@ -3,6 +3,9 @@ import authenticator = require('../../lib/authenticator');
 import * as dbManager from '../../lib/database';
 import { IGame } from '../../model/game';
 
+/**
+ * Retrieve game by id, only if the player is part of the game.
+ */
 export default async (request: NowRequest, response: NowResponse) => {
     // Validate JWT and get current user id
     let userId = '';

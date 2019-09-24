@@ -1,7 +1,7 @@
 import { NowRequest, NowResponse } from '@now/node';
-import authenticator = require('../../lib/authenticator');
 import * as dbManager from '../../lib/database';
 import { IGame } from '../../model/game';
+import authenticator = require('../../lib/authenticator');
 
 export default async (request: NowRequest, response: NowResponse) => {
     let userId = '';
@@ -33,7 +33,7 @@ export default async (request: NowRequest, response: NowResponse) => {
     const game: IGame = {
         completed: false,
         creator: userId,
-        currentMessageNumber: 1,
+        currentPhraseNumber: 1,
         firstWords: '',
         id: newGameKey,
         players: request.body.users,
@@ -53,8 +53,16 @@ export default async (request: NowRequest, response: NowResponse) => {
         };
     });
 
-    // Create an entry for the game data
-    updates[`/game-data/${newGameKey}`] = {};
+    const gameData: { [key: number]: { phrase: string, lastWords: string } } = {};
+    for (let i = 1; i <= game.rounds * Object.keys(game.players).length; i++) {
+        gameData[i] = {
+            lastWords: '',
+            phrase: '',
+        };
+    }
+
+    // Initialize game posts
+    updates[`/game-data/${newGameKey}`] = gameData;
 
     // Update all nodes at once
     const res = await database.ref().update(updates);

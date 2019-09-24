@@ -5,7 +5,7 @@ export interface IGame {
     players: { [key: number]: string; } | string[];
     creator: string;
     completed: boolean;
-    currentMessageNumber: number;
+    currentPhraseNumber: number;
     firstWords: string;
     timestamp: Date;
 }

@@ -1,9 +1,9 @@
-<div class="d-flex justify-content-center" *ngIf="!game && !retrievalError">
+<div class="d-flex justify-content-center" *ngIf="!game">
   <div class="spinner-border" role="status">
     <span class="sr-only">Loading...</span>
   </div>
 </div>
-<form [formGroup]="gameForm" (ngSubmit)="onSubmit()" *ngIf="game && !retrievalError">
+<form [formGroup]="gameForm" (ngSubmit)="onSubmit()" *ngIf="game">
 
   <div class="text-center mb-3" *ngIf="game.currentPhraseNumber === 1">
     <b>You are the first player of the game!</b>

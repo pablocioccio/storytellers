@@ -1,9 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 import { User } from '../users/model/user';
 import { Game } from './model/game';
-import { map, catchError } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -31,6 +31,18 @@ export class GameService {
         return throwError(`There was a problem retrieving the game: ${error}`);
       })
     );
+  }
+
+  postPhrase(id: string, phrase: string, lastWords: string): Observable<any> {
+    return this.http.post<any>(`/api/games/play/${id}`, {
+      phrase,
+      lastWords
+    }).pipe(
+      catchError(error => {
+        return throwError(`There was a problem posting the prhase: ${error}`);
+      })
+    );
+
   }
 
 }

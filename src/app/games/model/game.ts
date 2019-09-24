@@ -4,7 +4,7 @@ export interface Game {
   players: string[];
   creator: string;
   completed: boolean;
-  currentMessageNumber: number;
+  currentPhraseNumber: number;
   firstWords: string;
   timestamp: Date;
 }

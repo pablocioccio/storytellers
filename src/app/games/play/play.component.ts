@@ -1,42 +1,61 @@
-import { Component, OnInit, OnDestroy, ViewChild, AfterViewInit } from '@angular/core';
-import { FormControl, FormGroup, Validators, AbstractControl, ValidatorFn } from '@angular/forms';
-import { Subscription, Observable } from 'rxjs';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AbstractControl, FormControl, FormGroup, ValidatorFn, Validators } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
 import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
-import { GameService } from '../game.service';
-import { ParamMap, ActivatedRoute } from '@angular/router';
-import { switchMap } from 'rxjs/operators';
+import { Subscription } from 'rxjs';
 import { Game } from '../model/game';
+import { GameService } from '../game.service';
+import { switchMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-play',
   templateUrl: './play.component.html',
   styleUrls: ['./play.component.scss']
 })
-export class PlayComponent implements OnInit, AfterViewInit, OnDestroy {
+export class PlayComponent implements OnInit, OnDestroy {
 
-  game$: Observable<Game>;
-
-  @ViewChild('lastWordsContainer', { static: false }) public lastWordsContainerTooltip: NgbTooltip;
-
-  minLastWords = 1;
-  maxLastWords = 1;
-
+  game: Game;
   gameForm = new FormGroup({
     text: new FormControl('', [Validators.required, minWordsValidator(3)]),
     lastWords: new FormControl('', [Validators.required, minWordsValidator(1)]),
     lastWordsRange: new FormControl({ value: 1, disabled: true })
   });
 
+  minLastWords = 1;
+  maxLastWords = 1;
+
+  postSubmitted = false;
+
+  gameSubscription: Subscription;
+  phrasePostSubscription: Subscription;
   textChangeSubscription: Subscription;
   lastWordsCountSubscription: Subscription;
 
-  constructor(private gameService: GameService, private route: ActivatedRoute) { }
+  /* Since the form is loaded after the game is retrieved, we use a seter for the @ViewChild to make sure we access the tooltip
+  when it's really available (ngAfterViewInit can't guarantee that). */
+  @ViewChild('lastWordsContainerTooltip', { static: false }) set lastWordsContainerTooltip(tooltip: NgbTooltip) {
+    if (tooltip) {
+      tooltip.open();
+      setTimeout(() => {
+        tooltip.close();
+      }, 3000);
+    }
+  }
+
+  constructor(private route: ActivatedRoute, private gameService: GameService, private router: Router) { }
 
   ngOnInit() {
-    this.game$ = this.route.paramMap.pipe(
-      switchMap((params: ParamMap) =>
-        this.gameService.getGame(params.get('id')))
-    );
+
+    this.gameSubscription = this.route.paramMap.pipe(
+      switchMap(params => {
+        // Clear the existing game (if any)
+        this.game = undefined;
+        // Retrieve the game that was passed by id
+        return this.gameService.getGame(params.get('id'));
+      })
+    ).subscribe((game: Game) => {
+      this.game = game;
+    });
 
     this.textChangeSubscription = this.gameForm.get('text').valueChanges.subscribe((text: string) => {
       const lastWordsCount: number = this.gameForm.get('lastWordsRange').value;
@@ -47,13 +66,6 @@ export class PlayComponent implements OnInit, AfterViewInit, OnDestroy {
       const text: string = this.gameForm.get('text').value;
       this.updateLastWords(text, lastWordsCount);
     });
-  }
-
-  ngAfterViewInit() {
-    this.lastWordsContainerTooltip.open();
-    setTimeout(() => {
-      this.lastWordsContainerTooltip.close();
-    }, 3000);
   }
 
   updateLastWords(text: string, lastWordsCount: number) {
@@ -67,12 +79,28 @@ export class PlayComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   onSubmit() {
-    console.warn(this.gameForm.value);
+    this.postSubmitted = true;
+
+    // TODO: validate model
+    this.phrasePostSubscription = this.gameService.postPhrase(
+      this.game.id,
+      this.gameForm.get('text').value,
+      this.gameForm.get('lastWords').value)
+      .subscribe(
+        (data) => {
+          console.log(data);
+          this.router.navigate(['/welcome']);
+        }, (error) => {
+          console.log(error);
+          this.postSubmitted = false;
+        });
   }
 
   ngOnDestroy() {
+    this.gameSubscription.unsubscribe();
     this.textChangeSubscription.unsubscribe();
     this.lastWordsCountSubscription.unsubscribe();
+    if (this.phrasePostSubscription) { this.phrasePostSubscription.unsubscribe(); }
   }
 
 }

@@ -71,8 +71,7 @@ export class CreateComponent implements OnInit, OnDestroy {
       (data) => {
         console.log(data);
         this.router.navigate(['/welcome']);
-      },
-      (error) => {
+      }, (error) => {
         // Clear any previous error messages
         console.log(error);
         this.errorMessage = null;

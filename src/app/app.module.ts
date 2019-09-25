@@ -14,6 +14,7 @@ import { NavbarComponent } from './navbar/navbar.component';
 import { ProfileComponent } from './profile/profile.component';
 import { SearchComponent } from './users/search/search.component';
 import { WelcomeComponent } from './welcome/welcome.component';
+import { SpinnerComponent } from './spinner/spinner.component';
 
 
 @NgModule({
@@ -26,7 +27,8 @@ import { WelcomeComponent } from './welcome/welcome.component';
     SearchComponent,
     CreateComponent,
     WelcomeComponent,
-    PlayComponent
+    PlayComponent,
+    SpinnerComponent
   ],
   imports: [
     BrowserModule,

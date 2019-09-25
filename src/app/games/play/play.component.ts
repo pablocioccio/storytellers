@@ -3,9 +3,10 @@ import { AbstractControl, FormControl, FormGroup, ValidatorFn, Validators } from
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { Subscription } from 'rxjs';
-import { Game } from '../model/game';
-import { GameService } from '../game.service';
 import { switchMap } from 'rxjs/operators';
+import { SpinnerService } from 'src/app/spinner/spinner.service';
+import { GameService } from '../game.service';
+import { Game } from '../model/game';
 
 @Component({
   selector: 'app-play',
@@ -34,7 +35,7 @@ export class PlayComponent implements OnInit, OnDestroy {
   /* Since the form is loaded after the game is retrieved, we use a seter for the @ViewChild to make sure we access the tooltip
   when it's really available (ngAfterViewInit can't guarantee that). */
   @ViewChild('lastWordsContainerTooltip', { static: false }) set lastWordsContainerTooltip(tooltip: NgbTooltip) {
-    if (tooltip) {
+    if (tooltip && !this.postSubmitted) {
       tooltip.open();
       setTimeout(() => {
         tooltip.close();
@@ -42,12 +43,16 @@ export class PlayComponent implements OnInit, OnDestroy {
     }
   }
 
-  constructor(private route: ActivatedRoute, private gameService: GameService, private router: Router) { }
+  constructor(
+    private route: ActivatedRoute, private router: Router,
+    private gameService: GameService, private spinnerService: SpinnerService) { }
 
   ngOnInit() {
 
     this.gameSubscription = this.route.paramMap.pipe(
       switchMap(params => {
+        // Show spinner
+        this.spinnerService.show();
         // Clear the existing game (if any)
         this.game = undefined;
         // Retrieve the game that was passed by id
@@ -55,6 +60,7 @@ export class PlayComponent implements OnInit, OnDestroy {
       })
     ).subscribe((game: Game) => {
       this.game = game;
+      this.spinnerService.hide();
     });
 
     this.textChangeSubscription = this.gameForm.get('text').valueChanges.subscribe((text: string) => {

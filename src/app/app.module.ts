@@ -15,6 +15,7 @@ import { ProfileComponent } from './profile/profile.component';
 import { SearchComponent } from './users/search/search.component';
 import { WelcomeComponent } from './welcome/welcome.component';
 import { SpinnerComponent } from './spinner/spinner.component';
+import { ViewComponent } from './games/view/view.component';
 
 
 @NgModule({
@@ -28,7 +29,8 @@ import { SpinnerComponent } from './spinner/spinner.component';
     CreateComponent,
     WelcomeComponent,
     PlayComponent,
-    SpinnerComponent
+    SpinnerComponent,
+    ViewComponent
   ],
   imports: [
     BrowserModule,

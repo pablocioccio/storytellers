@@ -1,7 +1,7 @@
 import { NowRequest, NowResponse } from '@now/node';
+import authenticator = require('../../lib/authenticator');
 import * as dbManager from '../../lib/database';
 import { IGame } from '../../model/game';
-import authenticator = require('../../lib/authenticator');
 
 export default async (request: NowRequest, response: NowResponse) => {
     let userId = '';
@@ -33,7 +33,7 @@ export default async (request: NowRequest, response: NowResponse) => {
     const game: IGame = {
         completed: false,
         creator: userId,
-        currentPhraseNumber: 1,
+        currentPhraseNumber: 0,
         firstWords: '',
         id: newGameKey,
         players: request.body.users,
@@ -46,15 +46,13 @@ export default async (request: NowRequest, response: NowResponse) => {
 
     // Create an entry for each player in the 'user-games' node
     Object.values(request.body.users).forEach((user) => {
-        updates[`/user-games/${user}`] = {
-            [newGameKey]: {
-                timestamp: currentDate,
-            },
+        updates[`/user-games/${user}/${newGameKey}`] = {
+            timestamp: currentDate,
         };
     });
 
     const gameData: { [key: number]: { phrase: string, lastWords: string } } = {};
-    for (let i = 1; i <= game.rounds * Object.keys(game.players).length; i++) {
+    for (let i = 0; i < game.rounds * Object.keys(game.players).length; i++) {
         gameData[i] = {
             lastWords: '',
             phrase: '',

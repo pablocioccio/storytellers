@@ -42,8 +42,7 @@ export default async (request: NowRequest, response: NowResponse) => {
     }
 
     const players: string[] = game.players as string[];
-    let nextPlayerIndex: number = game.currentPhraseNumber % players.length - 1;
-    if (nextPlayerIndex === -1) { nextPlayerIndex = players.length - 1; }
+    const nextPlayerIndex: number = game.currentPhraseNumber % players.length;
     if (userId !== players[nextPlayerIndex]) {
         response.status(400).send('It\'s not your turn to play this game');
         return;
@@ -52,7 +51,7 @@ export default async (request: NowRequest, response: NowResponse) => {
     // Different database nodes will be updated all at once
     const updates: any = {};
 
-    if (game.currentPhraseNumber === game.rounds * players.length) {
+    if (game.currentPhraseNumber === game.rounds * players.length - 1) {
         // This is the last phrase of the game
         updates[`/games/${game.id}/currentPhraseNumber`] = -1;
         updates[`/games/${game.id}/firstWords`] = '';

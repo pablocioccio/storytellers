@@ -3,6 +3,7 @@ import { AppMetadata, ManagementClient, User, UserMetadata } from 'auth0';
 import authenticator = require('../../lib/authenticator');
 import * as dbManager from '../../lib/database';
 import { IGame } from '../../model/game';
+import { IGameData } from '../../model/game-data';
 import { IPlayer } from '../../model/player';
 
 /**
@@ -29,8 +30,8 @@ export default async (request: NowRequest, response: NowResponse) => {
     const database = dbManager.getDatabase();
 
     // Retrieve game from the database
-    const snapshot = await database.ref(`/games/${games}`).once('value');
-    const game: IGame = snapshot.val();
+    const gameSnapshot = await database.ref(`/games/${games}`).once('value');
+    const game: IGame = gameSnapshot.val();
     if (!game) {
         response.status(404).send('Game not found.');
         return;
@@ -41,7 +42,7 @@ export default async (request: NowRequest, response: NowResponse) => {
         return;
     }
 
-    /* If the game is completed, return full user info instead of just the ids */
+    /* If the game is completed, return full user info instead of just the ids. Also return full game data. */
     if (game.completed) {
         const managementClient: ManagementClient = new ManagementClient({
             clientId: `${process.env.authentication_mgmt_api_clientid}`,
@@ -60,6 +61,16 @@ export default async (request: NowRequest, response: NowResponse) => {
 
         // The fields we require from the Auth0 API, match those of the IPlayer interface.
         game.players = users as IPlayer[];
+
+        // Retrieve game data
+        const gameDataSnapshot = await database.ref(`/game-data/${games}`).once('value');
+        const gameData: IGameData[] = gameDataSnapshot.val();
+        if (!gameData) {
+            response.status(404).send('Game data not found.');
+            return;
+        }
+        game.gameData = gameData;
+        console.log(gameData);
     }
 
     response.status(200).send(game);

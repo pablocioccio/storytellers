@@ -1,3 +1,4 @@
+import { IGameData } from './game-data';
 import { IPlayer } from './player';
 
 export interface IGame {
@@ -11,4 +12,5 @@ export interface IGame {
     currentPhraseNumber: number;
     firstWords: string;
     timestamp: Date;
+    gameData?: IGameData[];
 }

@@ -107,7 +107,7 @@ export class PlayComponent implements OnInit, OnDestroy {
       .subscribe(
         (data) => {
           console.log(data);
-          this.router.navigate(['/welcome']);
+          this.router.navigate(['/games/dahsboard']);
         }, (error) => {
           console.log(error);
           this.postSubmitted = false;

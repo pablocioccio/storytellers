@@ -70,7 +70,6 @@ export default async (request: NowRequest, response: NowResponse) => {
             return;
         }
         game.gameData = gameData;
-        console.log(gameData);
     }
 
     response.status(200).send(game);

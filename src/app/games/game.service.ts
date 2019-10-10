@@ -33,6 +33,15 @@ export class GameService {
     );
   }
 
+  listGames(): Observable<Game[]> {
+    return this.http.get('/api/games/list').pipe(
+      map((data: Game[]) => data),
+      catchError(error => {
+        return throwError(`There was a problem listing games: ${error}`);
+      })
+    );
+  }
+
   postPhrase(id: string, phrase: string, lastWords: string): Observable<any> {
     return this.http.post<any>(`/api/games/play/${id}`, {
       phrase,

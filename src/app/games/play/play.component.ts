@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { Subscription } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
+import { AuthenticationService } from 'src/app/authentication/authentication.service';
 import { SpinnerService } from 'src/app/spinner/spinner.service';
 import { GameService } from '../game.service';
 import { Game } from '../model/game';
@@ -22,12 +23,15 @@ export class PlayComponent implements OnInit, OnDestroy {
     lastWordsRange: new FormControl({ value: 1, disabled: true })
   });
 
+  currentUserId: string;
+
   minLastWords = 1;
   maxLastWords = 1;
 
   postSubmitted = false;
 
   gameSubscription: Subscription;
+  currentUserSubscription: Subscription;
   phrasePostSubscription: Subscription;
   textChangeSubscription: Subscription;
   lastWordsCountSubscription: Subscription;
@@ -44,10 +48,14 @@ export class PlayComponent implements OnInit, OnDestroy {
   }
 
   constructor(
-    private route: ActivatedRoute, private router: Router,
+    private route: ActivatedRoute, private router: Router, public auth: AuthenticationService,
     private gameService: GameService, private spinnerService: SpinnerService) { }
 
   ngOnInit() {
+    // Retrieve current user profile
+    this.currentUserSubscription = this.auth.userProfile$.subscribe((user) => {
+      this.currentUserId = user.sub;
+    });
 
     this.gameSubscription = this.route.paramMap.pipe(
       switchMap(params => {
@@ -59,6 +67,10 @@ export class PlayComponent implements OnInit, OnDestroy {
         return this.gameService.getGame(params.get('id'));
       })
     ).subscribe((game: Game) => {
+      if (game.completed || this.currentUserId !== game.players[game.currentPhraseNumber % game.players.length]) {
+        // The game is either finished or it's not the user's turn
+        this.router.navigate(['/games/dashboard']);
+      }
       this.game = game;
       this.spinnerService.hide();
     });
@@ -105,6 +117,7 @@ export class PlayComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.gameSubscription.unsubscribe();
     this.textChangeSubscription.unsubscribe();
+    this.currentUserSubscription.unsubscribe();
     this.lastWordsCountSubscription.unsubscribe();
     if (this.phrasePostSubscription) { this.phrasePostSubscription.unsubscribe(); }
   }

@@ -4,10 +4,11 @@ import { AuthGuard } from './authentication/authentication.guard';
 import { CallbackComponent } from './authentication/callback/callback.component';
 import { FirebaseComponent } from './firebase/firebase.component';
 import { CreateComponent } from './games/create/create.component';
-import { ProfileComponent } from './profile/profile.component';
-import { WelcomeComponent } from './welcome/welcome.component';
+import { DashboardComponent } from './games/dashboard/dashboard.component';
 import { PlayComponent } from './games/play/play.component';
 import { ViewComponent } from './games/view/view.component';
+import { ProfileComponent } from './profile/profile.component';
+import { WelcomeComponent } from './welcome/welcome.component';
 
 const routes: Routes = [
   {
@@ -22,6 +23,11 @@ const routes: Routes = [
   {
     path: 'firebase-api',
     component: FirebaseComponent,
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'games/dashboard',
+    component: DashboardComponent,
     canActivate: [AuthGuard]
   },
   {

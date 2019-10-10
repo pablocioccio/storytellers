@@ -67,17 +67,17 @@ export class CreateComponent implements OnInit, OnDestroy {
     this.gameCreationSubmitted = true;
 
     // TODO: validate model
-    this.gameCreationSubscription = this.gameService.createGame([this.currentUser, ...this.users], this.numberOfRounds.value).subscribe(
-      (data) => {
-        console.log(data);
-        this.router.navigate(['/welcome']);
-      }, (error) => {
-        // Clear any previous error messages
-        console.log(error);
-        this.errorMessage = null;
-        this.errorSubject.next('There was an error creating the game.');
-        this.gameCreationSubmitted = false;
-      });
+    this.gameCreationSubscription = this.gameService.createGame([this.currentUser, ...this.users], this.numberOfRounds.value)
+      .subscribe(
+        () => {
+          this.router.navigate(['/games/dashboard']);
+        }, (error) => {
+          // Clear any previous error messages
+          console.log(error);
+          this.errorMessage = null;
+          this.errorSubject.next('There was an error creating the game.');
+          this.gameCreationSubmitted = false;
+        });
   }
 
   ngOnDestroy() {

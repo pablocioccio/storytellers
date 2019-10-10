@@ -1,0 +1,27 @@
+<div class="card-deck" *ngIf="games">
+  <div class="card mb-3" *ngFor="let game of games; let i = index">
+    <div class="card-header d-flex justify-content-center">
+      <img class="rounded-circle m-3" src="https://secure.meetupstatic.com/photos/member/7/b/5/e/highres_240151582.jpeg"
+        width="100" height="100">
+    </div>
+    <div class="card-body text-dark">
+      <p class="card-text d-flex justify-content-center" *ngIf="game.completed">
+        <strong>Click to view the details!</strong>
+        <a [routerLink]="['/games', game.id]" class="stretched-link"></a>
+      </p>
+      <p class="card-text d-flex justify-content-center"
+        *ngIf="!game.completed && currentUserId === game.players[game.currentPhraseNumber % game.players.length]">
+        <strong>It's your turn!</strong>
+        <a [routerLink]="['/games/play', game.id]" class="stretched-link"></a>
+      </p>
+      <p class="card-text d-flex justify-content-center"
+        *ngIf="!game.completed && currentUserId !== game.players[game.currentPhraseNumber % game.players.length]">
+        Waiting for another player...
+      </p>
+      <ngb-progressbar [type]="calculateProgressBarColor(i)"
+        [value]="game.completed ? 100 : (game.currentPhraseNumber * 100 / (game.rounds * game.players.length)) | number:'1.0-0'"
+        [striped]="true" [animated]="true" [showValue]="true">
+      </ngb-progressbar>
+    </div>
+  </div>
+</div>

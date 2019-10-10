@@ -9,13 +9,14 @@ import { CallbackComponent } from './authentication/callback/callback.component'
 import { InterceptorService } from './authentication/interceptor.service';
 import { FirebaseComponent } from './firebase/firebase.component';
 import { CreateComponent } from './games/create/create.component';
+import { DashboardComponent } from './games/dashboard/dashboard.component';
 import { PlayComponent } from './games/play/play.component';
+import { ViewComponent } from './games/view/view.component';
 import { NavbarComponent } from './navbar/navbar.component';
 import { ProfileComponent } from './profile/profile.component';
+import { SpinnerComponent } from './spinner/spinner.component';
 import { SearchComponent } from './users/search/search.component';
 import { WelcomeComponent } from './welcome/welcome.component';
-import { SpinnerComponent } from './spinner/spinner.component';
-import { ViewComponent } from './games/view/view.component';
 
 
 @NgModule({
@@ -30,7 +31,8 @@ import { ViewComponent } from './games/view/view.component';
     WelcomeComponent,
     PlayComponent,
     SpinnerComponent,
-    ViewComponent
+    ViewComponent,
+    DashboardComponent
   ],
   imports: [
     BrowserModule,

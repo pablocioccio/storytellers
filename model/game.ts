@@ -10,6 +10,7 @@ export interface IGame {
     players: { [key: number]: string; } | string[] | IPlayer[];
     completed: boolean;
     currentPhraseNumber: number;
+    currentPlayer: IPlayer;
     firstWords: string;
     timestamp: Date;
     gameData?: IGameData[];

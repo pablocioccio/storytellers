@@ -1,7 +1,9 @@
 import { NowRequest, NowResponse } from '@now/node';
+import { AppMetadata, ManagementClient, User, UserMetadata } from 'auth0';
 import authenticator = require('../../../lib/authenticator');
 import * as dbManager from '../../../lib/database';
 import { IGame } from '../../../model/game';
+import { IPlayer } from '../../../model/player';
 
 export default async (request: NowRequest, response: NowResponse) => {
     // Validate JWT and get current user id
@@ -42,8 +44,8 @@ export default async (request: NowRequest, response: NowResponse) => {
     }
 
     const players: string[] = game.players as string[];
-    const nextPlayerIndex: number = game.currentPhraseNumber % players.length;
-    if (userId !== players[nextPlayerIndex]) {
+    const currentPlayerIndex: number = game.currentPhraseNumber % players.length;
+    if (userId !== players[currentPlayerIndex]) {
         response.status(400).send('It\'s not your turn to play this game');
         return;
     }
@@ -52,11 +54,28 @@ export default async (request: NowRequest, response: NowResponse) => {
     const updates: any = {};
 
     if (game.currentPhraseNumber === game.rounds * players.length - 1) {
-        // This is the last phrase of the game
-        updates[`/games/${game.id}/currentPhraseNumber`] = -1;
-        updates[`/games/${game.id}/firstWords`] = '';
+        // This was the last phrase of the game
+        updates[`/games/${game.id}/currentPhraseNumber`] = null;
+        updates[`/games/${game.id}/currentPlayer`] = null;
+        updates[`/games/${game.id}/firstWords`] = null;
         updates[`/games/${game.id}/completed`] = true;
     } else {
+        // Retrieve the next player info
+        const managementClient: ManagementClient = new ManagementClient({
+            clientId: `${process.env.authentication_mgmt_api_clientid}`,
+            clientSecret: `${process.env.authentication_mgmt_api_secret}`,
+            domain: `${process.env.authentication_domain}`,
+        });
+        const nextPlayerIndex = (game.currentPhraseNumber + 1) % players.length;
+        const users: Array<User<AppMetadata, UserMetadata>> = await managementClient.getUsers({
+            fields: 'user_id,name,email,picture',
+            include_fields: true,
+            q: `user_id:${game.players[nextPlayerIndex]}`,
+            search_engine: 'v3',
+        });
+
+        // Update game data
+        updates[`/games/${game.id}/currentPlayer`] = users[0] as IPlayer;
         updates[`/games/${game.id}/currentPhraseNumber`] = game.currentPhraseNumber + 1;
         updates[`/games/${game.id}/firstWords`] = request.body.lastWords;
     }

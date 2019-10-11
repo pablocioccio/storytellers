@@ -1,19 +1,20 @@
 import { NowRequest, NowResponse } from '@now/node';
 import authenticator = require('../../lib/authenticator');
 import * as dbManager from '../../lib/database';
+import * as userInfo from '../../lib/userinfo';
 import { IGame } from '../../model/game';
+import { IPlayer } from '../../model/player';
 
 export default async (request: NowRequest, response: NowResponse) => {
-    let userId = '';
     try {
-        const payload = await authenticator.handler(request.headers);
-        userId = payload.sub;
+        await authenticator.handler(request.headers);
     } catch (error) {
         console.log(error);
         response.status(401).json({ error: error.message });
         return;
     }
 
+    const creator: IPlayer = await userInfo.retrieve(request.headers);
     const database = dbManager.getDatabase();
 
     // Get a key for a new game
@@ -32,8 +33,9 @@ export default async (request: NowRequest, response: NowResponse) => {
     // Create the game
     const game: IGame = {
         completed: false,
-        creator: userId,
+        creator: creator.user_id,
         currentPhraseNumber: 0,
+        currentPlayer: creator,
         firstWords: '',
         id: newGameKey,
         players: request.body.users,

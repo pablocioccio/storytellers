@@ -67,7 +67,7 @@ export class PlayComponent implements OnInit, OnDestroy {
         return this.gameService.getGame(params.get('id'));
       })
     ).subscribe((game: Game) => {
-      if (game.completed || this.currentUserId !== game.players[game.currentPhraseNumber % game.players.length]) {
+      if (game.completed || this.currentUserId !== game.currentPlayer.user_id) {
         // The game is either finished or it's not the user's turn
         this.router.navigate(['/games/dashboard']);
       }
@@ -107,7 +107,7 @@ export class PlayComponent implements OnInit, OnDestroy {
       .subscribe(
         (data) => {
           console.log(data);
-          this.router.navigate(['/games/dahsboard']);
+          this.router.navigate(['/games/dashboard']);
         }, (error) => {
           console.log(error);
           this.postSubmitted = false;

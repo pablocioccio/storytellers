@@ -2,7 +2,8 @@
 
   <div class="card mb-2">
     <div class="card-body">
-      <span *ngFor="let data of game.gameData; let i = index;" [ngClass]="'game-data-' + i % game.players.length">
+      <span *ngFor="let data of game.gameData; let i = index;"
+        [ngClass]="['game-data-' + i % game.players.length, 'text-wrap']">
         <ngb-highlight [result]="data.phrase + ' '" [term]="data.lastWords"></ngb-highlight>
       </span>
     </div>

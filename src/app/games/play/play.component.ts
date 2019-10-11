@@ -19,7 +19,7 @@ export class PlayComponent implements OnInit, OnDestroy {
   game: Game;
   gameForm = new FormGroup({
     text: new FormControl('', [Validators.required, minWordsValidator(3)]),
-    lastWords: new FormControl('', [Validators.required, minWordsValidator(1)]),
+    lastWords: new FormControl(''), // Validators will be set dynamically depending on the game
     lastWordsRange: new FormControl({ value: 1, disabled: true })
   });
 
@@ -29,6 +29,7 @@ export class PlayComponent implements OnInit, OnDestroy {
   maxLastWords = 1;
 
   postSubmitted = false;
+  isLastPlayer: boolean;
 
   gameSubscription: Subscription;
   currentUserSubscription: Subscription;
@@ -39,7 +40,7 @@ export class PlayComponent implements OnInit, OnDestroy {
   /* Since the form is loaded after the game is retrieved, we use a seter for the @ViewChild to make sure we access the tooltip
   when it's really available (ngAfterViewInit can't guarantee that). */
   @ViewChild('lastWordsContainerTooltip', { static: false }) set lastWordsContainerTooltip(tooltip: NgbTooltip) {
-    if (tooltip && !this.postSubmitted) {
+    if (tooltip && !this.postSubmitted && !this.isLastPlayer) {
       tooltip.open();
       setTimeout(() => {
         tooltip.close();
@@ -67,10 +68,19 @@ export class PlayComponent implements OnInit, OnDestroy {
         return this.gameService.getGame(params.get('id'));
       })
     ).subscribe((game: Game) => {
+      // The game is either finished or it's not the user's turn
       if (game.completed || this.currentUserId !== game.currentPlayer.user_id) {
-        // The game is either finished or it's not the user's turn
         this.router.navigate(['/games/dashboard']);
       }
+
+      this.isLastPlayer = game.currentPhraseNumber + 1 === game.players.length * game.rounds;
+      if (!this.isLastPlayer) {
+        // If it's not the last player, last words are required
+        this.gameForm.get('lastWords').setValidators([Validators.required, minWordsValidator(1)]);
+      } else {
+        this.gameForm.get('lastWords').setValidators(null);
+      }
+
       this.game = game;
       this.spinnerService.hide();
     });
@@ -87,6 +97,7 @@ export class PlayComponent implements OnInit, OnDestroy {
   }
 
   updateLastWords(text: string, lastWordsCount: number) {
+    if (this.isLastPlayer) { return; }
     const words: string[] = text.split(' ').filter(word => word.length > 0);
     this.gameForm.get('lastWords').setValue(words.slice(-lastWordsCount).join(' '));
     this.maxLastWords = words.length ? Math.ceil(words.length / 3) : 1; // Keep maxLastWords to a third of the actual text
@@ -130,3 +141,4 @@ export function minWordsValidator(minWords: number): ValidatorFn {
     return wordCount < minWords ? { minWords: { required: minWords, current: wordCount } } : null;
   };
 }
+

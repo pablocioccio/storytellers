@@ -3,9 +3,12 @@
   <div class="text-center mb-3" *ngIf="game.currentPhraseNumber === 0">
     <b>You are the first player of the game!</b>
   </div>
+  <div class="text-center mb-3" *ngIf="isLastPlayer">
+    <b>You are the last player of the game!</b>
+  </div>
   <div class="input-group mb-3">
     <div class="input-group-prepend" *ngIf="game.currentPhraseNumber > 0">
-      <span class="input-group-text">... {{game.firstWords}}</span>
+      <span class="input-group-text text-wrap">... {{game.firstWords}}</span>
     </div>
     <textarea id="text" class="form-control"
       [class.is-invalid]="gameForm.controls['text'].errors && (gameForm.controls['text'].dirty || gameForm.controls['text'].touched)"
@@ -20,7 +23,7 @@
     </div>
   </div>
 
-  <div class="d-flex mb-3">
+  <div class="d-flex mb-3" *ngIf="!isLastPlayer">
     <div class="p-2">
       <b ngbTooltip="Up to a third of the whole content">Slide to reveal more</b>
     </div>
@@ -30,7 +33,7 @@
     </div>
   </div>
 
-  <div #lastWordsContainerTooltip="ngbTooltip"
+  <div #lastWordsContainerTooltip="ngbTooltip" *ngIf="!isLastPlayer"
     class="shadow text-right text-break p-3 mb-5 bg-white rounded border border-info"
     ngbTooltip="This is what the next player will see" triggers="manual">
     ... {{gameForm.value.lastWords}}

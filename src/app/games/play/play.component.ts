@@ -69,7 +69,7 @@ export class PlayComponent implements OnInit, OnDestroy {
       })
     ).subscribe((game: Game) => {
       // The game is either finished or it's not the user's turn
-      if (game.completed || this.currentUserId !== game.currentPlayer.user_id) {
+      if (game.completed || this.currentUserId !== game.currentPlayerId) {
         this.router.navigate(['/games/dashboard']);
       }
 
@@ -109,8 +109,6 @@ export class PlayComponent implements OnInit, OnDestroy {
 
   onSubmit() {
     this.postSubmitted = true;
-
-    // TODO: validate model
     this.phrasePostSubscription = this.gameService.postPhrase(
       this.game.id,
       this.gameForm.get('text').value,

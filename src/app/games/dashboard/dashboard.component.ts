@@ -5,6 +5,7 @@ import { AuthenticationService } from 'src/app/authentication/authentication.ser
 import { SpinnerService } from 'src/app/spinner/spinner.service';
 import { GameService } from '../game.service';
 import { Game } from '../model/game';
+import { User } from 'src/app/users/model/user';
 
 @Component({
   selector: 'app-dashboard',
@@ -34,6 +35,10 @@ export class DashboardComponent implements OnInit {
     this.currentUserSubscription = this.auth.userProfile$.subscribe((user) => {
       this.currentUserId = user.sub;
     });
+  }
+
+  getUserInfo(userId: string, users: User[]): User {
+    return users.find((user) => user.user_id === userId);
   }
 
   calculateProgressBarColor(index: number) {

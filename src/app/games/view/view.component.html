@@ -1,16 +1,33 @@
 <div *ngIf="game" class="container-fluid">
 
-  <div class="card mb-2">
+  <div class="card mb-3">
+    <div class="card-header text-center">
+      <h4>{{game.title}}</h4>
+    </div>
     <div class="card-body">
-      <span *ngFor="let data of game.gameData; let i = index;"
-        [ngClass]="['game-data-' + i % game.players.length, 'text-wrap']">
-        <ngb-highlight [result]="data.phrase + ' '" [term]="data.lastWords"></ngb-highlight>
-      </span>
+      <p class="card-text text-center text-danger"
+        *ngIf="!game.completed && (auth.userProfile$ | async).sub === game.currentPlayerId">
+        It's your turn!
+      </p>
+      <p class="card-text text-center"
+        *ngIf="!game.completed && (auth.userProfile$ | async).sub === game.currentPlayerId">
+        <a [routerLink]="['/games/play', game.id]" class="btn btn-primary stretched-link">Play</a>
+      </p>
+      <p class="card-text text-center"
+        *ngIf="!game.completed && (auth.userProfile$ | async).sub !== game.currentPlayerId">
+        Waiting for&nbsp;<strong><i>{{getUserInfo(game.currentPlayerId, game.players).name}}</i></strong>
+      </p>
+      <ng-container *ngIf="game.completed">
+        <span *ngFor="let data of game.gameData; let i = index;"
+          [ngClass]="['game-data-' + i % game.players.length, 'text-wrap']">
+          <ngb-highlight [result]="data.phrase + ' '" [term]="data.lastWords"></ngb-highlight>
+        </span>
+      </ng-container>
     </div>
   </div>
 
   <table class="table table-hover mb-2">
-    <caption>Hover or tap on a player to see what they wrote</caption>
+    <caption *ngIf="game.completed">Hover or tap on a player to see what they wrote</caption>
     <thead class="thead-dark">
       <tr>
         <th scope="col">#</th>

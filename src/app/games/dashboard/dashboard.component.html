@@ -1,24 +1,24 @@
 <div class="card-deck" *ngIf="games">
   <div class="card mb-3" *ngFor="let game of games, let i = index">
     <div class="card-header d-flex justify-content-center">
-      <img class="rounded-circle m-3" [src]="game.currentPlayer.picture" width="100" height="100"
-        *ngIf="!game.completed">
+      <img class="rounded-circle m-3" [src]="getUserInfo(game.currentPlayerId, game.players).picture" width="100"
+        height="100" *ngIf="!game.completed">
       <img class="rounded-circle m-3" src="assets/images/game_finished.png" width="100" height="100"
         *ngIf="game.completed">
     </div>
-    <div class="card-body text-dark">
-      <p class="card-text d-flex justify-content-center" *ngIf="game.completed">
-        <strong>Click to view the details!</strong>
+    <div class="card-body">
+      <h4 class="card-title text-center">{{game.title}}</h4>
+      <p class="card-text text-center text-success" *ngIf="game.completed">
+        This game is finished!
         <a [routerLink]="['/games', game.id]" class="stretched-link"></a>
       </p>
-      <p class="card-text d-flex justify-content-center"
-        *ngIf="!game.completed && currentUserId === game.currentPlayer.user_id">
-        <strong>It's your turn!</strong>
+      <p class="card-text text-center text-danger" *ngIf="!game.completed && currentUserId === game.currentPlayerId">
+        It's your turn!
         <a [routerLink]="['/games/play', game.id]" class="stretched-link"></a>
       </p>
-      <p class="card-text d-flex justify-content-center"
-        *ngIf="!game.completed && currentUserId !== game.currentPlayer.user_id">
-        Waiting for&nbsp;<strong>{{game.currentPlayer.name}}</strong>
+      <p class="card-text text-center" *ngIf="!game.completed && currentUserId !== game.currentPlayerId">
+        Waiting for&nbsp;<strong><i>{{getUserInfo(game.currentPlayerId, game.players).name}}</i></strong>
+        <a [routerLink]="['/games', game.id]" class="stretched-link"></a>
       </p>
       <ngb-progressbar [type]="calculateProgressBarColor(i)"
         [value]="game.completed ? 100 : (game.currentPhraseNumber * 100 / (game.rounds * game.players.length)) | number:'1.0-0'"

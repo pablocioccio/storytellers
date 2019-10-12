@@ -3,13 +3,13 @@ import { GameData } from './game-data';
 
 export interface Game {
   id: string;
+  title: string;
   rounds: number;
-  /* When the game is completed, the API returns full user info. If it's not, it returns just the user ids. */
-  players: string[] | User[];
+  players: User[];
   creator: string;
   completed: boolean;
+  currentPlayerId: string;
   currentPhraseNumber: number;
-  currentPlayer: User;
   firstWords: string;
   timestamp: Date;
   gameData?: GameData[]; // Game data is returned when the game is finished

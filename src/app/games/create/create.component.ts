@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { FormControl, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Subject, Subscription } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
@@ -20,7 +20,8 @@ export class CreateComponent implements OnInit, OnDestroy {
 
   currentUser: User; // The current user is always part of the game
   users: User[] = []; // List of selected users
-  numberOfRounds = new FormControl(this.MIN_ROUNDS);
+  numberOfRounds = new FormControl(this.MIN_ROUNDS, [Validators.min(this.MIN_ROUNDS), Validators.max(this.MAX_ROUNDS)]);
+  title = new FormControl(null, [Validators.required]);
 
 
   errorMessage: string; // Error message used for alerts
@@ -65,19 +66,17 @@ export class CreateComponent implements OnInit, OnDestroy {
 
   createGame() {
     this.gameCreationSubmitted = true;
-
-    // TODO: validate model
-    this.gameCreationSubscription = this.gameService.createGame([this.currentUser, ...this.users], this.numberOfRounds.value)
-      .subscribe(
-        () => {
-          this.router.navigate(['/games/dashboard']);
-        }, (error) => {
-          // Clear any previous error messages
-          console.log(error);
-          this.errorMessage = null;
-          this.errorSubject.next('There was an error creating the game.');
-          this.gameCreationSubmitted = false;
-        });
+    this.gameCreationSubscription = this.gameService.createGame(
+      [this.currentUser, ...this.users], this.numberOfRounds.value, this.title.value
+    ).subscribe(() => {
+      this.router.navigate(['/games/dashboard']);
+    }, (error) => {
+      // Clear any previous error messages
+      console.log(error);
+      this.errorMessage = null;
+      this.errorSubject.next('There was an error creating the game.');
+      this.gameCreationSubmitted = false;
+    });
   }
 
   ngOnDestroy() {

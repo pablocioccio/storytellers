@@ -5,6 +5,8 @@ import { switchMap } from 'rxjs/operators';
 import { SpinnerService } from 'src/app/spinner/spinner.service';
 import { GameService } from '../game.service';
 import { Game } from '../model/game';
+import { AuthenticationService } from 'src/app/authentication/authentication.service';
+import { User } from 'src/app/users/model/user';
 
 @Component({
   selector: 'app-view',
@@ -17,7 +19,7 @@ export class ViewComponent implements OnInit, OnDestroy {
   gameSubscription: Subscription;
 
   constructor(
-    private route: ActivatedRoute, private router: Router, private renderer: Renderer2,
+    private route: ActivatedRoute, public auth: AuthenticationService, private renderer: Renderer2,
     private gameService: GameService, private spinnerService: SpinnerService) { }
 
   ngOnInit() {
@@ -31,30 +33,33 @@ export class ViewComponent implements OnInit, OnDestroy {
         return this.gameService.getGame(params.get('id'));
       })
     ).subscribe((game: Game) => {
-      if (!game.completed) { this.router.navigate(['/games/dashboard']); }
       this.game = game;
       this.spinnerService.hide();
     });
   }
 
+  getUserInfo(userId: string, users: User[]): User {
+    return users.find((user) => user.user_id === userId);
+  }
+
   addHighlight(playerNumber: number) {
     document.body.querySelectorAll(`.game-data-${playerNumber}`).forEach((element: Element) => {
-      this.renderer.addClass(element, 'badge');
+      this.renderer.setStyle(element, 'border-radius', '0.25rem');
       switch (playerNumber % 5) {
         case 0:
-          this.renderer.addClass(element, 'badge-success');
+          this.renderer.addClass(element, 'bg-success');
           break;
         case 1:
-          this.renderer.addClass(element, 'badge-danger');
+          this.renderer.addClass(element, 'bg-danger');
           break;
         case 2:
-          this.renderer.addClass(element, 'badge-primary');
+          this.renderer.addClass(element, 'bg-primary');
           break;
         case 3:
-          this.renderer.addClass(element, 'badge-warning');
+          this.renderer.addClass(element, 'bg-warning');
           break;
         case 4:
-          this.renderer.addClass(element, 'badge-dark');
+          this.renderer.addClass(element, 'bg-dark');
           break;
       }
     });
@@ -62,12 +67,12 @@ export class ViewComponent implements OnInit, OnDestroy {
 
   removeHighlight(playerNumber: string) {
     document.body.querySelectorAll(`.game-data-${playerNumber}`).forEach((element: Element) => {
-      this.renderer.removeClass(element, 'badge');
-      this.renderer.removeClass(element, 'badge-success');
-      this.renderer.removeClass(element, 'badge-danger');
-      this.renderer.removeClass(element, 'badge-warning');
-      this.renderer.removeClass(element, 'badge-primary');
-      this.renderer.removeClass(element, 'badge-dark');
+      this.renderer.removeStyle(element, 'border-radius');
+      this.renderer.removeClass(element, 'bg-success');
+      this.renderer.removeClass(element, 'bg-danger');
+      this.renderer.removeClass(element, 'bg-warning');
+      this.renderer.removeClass(element, 'bg-primary');
+      this.renderer.removeClass(element, 'bg-dark');
     });
   }
 

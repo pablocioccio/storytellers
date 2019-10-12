@@ -12,14 +12,10 @@ export class GameService {
 
   constructor(private http: HttpClient) { }
 
-  createGame(users: User[], rounds: number): Observable<any> {
-    const userData = {};
-    users.forEach((element: User, index: number) => {
-      userData[index] = element.user_id;
-    });
-
+  createGame(users: User[], rounds: number, title: string): Observable<any> {
     return this.http.post('/api/games/create', {
-      users: userData,
+      users: users.map((user) => user.user_id),
+      title,
       rounds
     });
   }

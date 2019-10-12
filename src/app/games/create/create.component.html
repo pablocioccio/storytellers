@@ -1,11 +1,25 @@
 <div class="container">
   <ngb-alert *ngIf="errorMessage" [type]="'danger'" (close)="errorMessage = null">{{ errorMessage }}</ngb-alert>
+
+  <div class="input-group mb-3">
+    <div class="input-group-prepend">
+      <span class="input-group-text">Title</span>
+    </div>
+    <input id="title" [class.is-invalid]="title.errors" [class.is-valid]="title.valid" [formControl]="title"
+      class="form-control" aria-label="Title">
+  </div>
+
   <app-user-search (selectUser)="userSelected($event)"></app-user-search>
   <table class="table table-hover mt-2">
-    <caption *ngIf="users.length === 0">You need at least one more player to create a game.</caption>
-    <caption *ngIf="users.length > 0 && users.length < MAX_PLAYERS">You are ready to go! You can still add up to
-      <strong>{{MAX_PLAYERS - users.length}}</strong> more player(s).</caption>
-    <caption *ngIf="users.length === MAX_PLAYERS">You have reached the maximum number of players.</caption>
+    <caption *ngIf="users.length === 0" class="text-danger">
+      You need at least one more player to create a game.
+    </caption>
+    <caption *ngIf="users.length > 0 && users.length < MAX_PLAYERS" class="text-success">
+      You are ready to go! You can still add up to <strong>{{MAX_PLAYERS - users.length}}</strong> more player(s).
+    </caption>
+    <caption *ngIf="users.length === MAX_PLAYERS" class="text-warning">
+      You have reached the maximum number of players.
+    </caption>
     <thead class="thead-dark">
       <tr>
         <th scope="col">#</th>
@@ -50,10 +64,11 @@
   </div>
 
   <div class="text-center">
-    <button type="button" class="btn btn-primary" [disabled]="users.length < 1 || users.length > MAX_PLAYERS"
+    <button type="button" class="btn btn-primary"
+      [disabled]="users.length < 1 || users.length > MAX_PLAYERS || numberOfRounds.invalid || title.invalid"
       (click)="createGame();">
-      <span *ngIf="gameCreationSubmitted" class="spinner-border spinner-border-sm" role="status"
-        aria-hidden="true"></span>
+      <span *ngIf="gameCreationSubmitted" class="spinner-border spinner-border-sm" role="status" aria-hidden="true">
+      </span>
       Create Game
     </button>
   </div>

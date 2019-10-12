@@ -4,7 +4,8 @@ import * as dbManager from '../../lib/database';
 import { IGame } from '../../model/game';
 
 export default async (request: NowRequest, response: NowResponse) => {
-    let userId = '';
+    // Validate JWT and get current user id
+    let userId: string;
     try {
         const payload = await authenticator.handler(request.headers);
         userId = payload.sub;

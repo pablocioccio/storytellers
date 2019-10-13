@@ -17,6 +17,8 @@ import { ProfileComponent } from './profile/profile.component';
 import { SpinnerComponent } from './spinner/spinner.component';
 import { SearchComponent } from './users/search/search.component';
 import { WelcomeComponent } from './welcome/welcome.component';
+import { ServiceWorkerModule } from '@angular/service-worker';
+import { environment } from '../environments/environment';
 
 
 @NgModule({
@@ -40,7 +42,8 @@ import { WelcomeComponent } from './welcome/welcome.component';
     HttpClientModule,
     FormsModule,
     NgbModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production })
   ],
   providers: [
     {

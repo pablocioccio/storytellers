@@ -19,6 +19,7 @@ import { SearchComponent } from './users/search/search.component';
 import { WelcomeComponent } from './welcome/welcome.component';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
+import { UpdateComponent } from './service-worker/update/update.component';
 
 
 @NgModule({
@@ -34,7 +35,8 @@ import { environment } from '../environments/environment';
     PlayComponent,
     SpinnerComponent,
     ViewComponent,
-    DashboardComponent
+    DashboardComponent,
+    UpdateComponent
   ],
   imports: [
     BrowserModule,
@@ -43,7 +45,7 @@ import { environment } from '../environments/environment';
     FormsModule,
     NgbModule,
     ReactiveFormsModule,
-    ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production })
+    ServiceWorkerModule.register('custom-ngsw-worker.js', { enabled: environment.production })
   ],
   providers: [
     {

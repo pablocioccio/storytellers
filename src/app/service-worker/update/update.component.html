@@ -1,0 +1,6 @@
+<div class="update-overlay" *ngIf="updateAvailable">
+  <ngb-toast header="There's an update available" [autohide]="false" (hide)="rejectUpdate()">
+    Please refresh the page to see the changes
+  </ngb-toast>
+</div>
+<div class="update-overlay-background"></div>

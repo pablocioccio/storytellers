@@ -114,8 +114,7 @@ export class PlayComponent implements OnInit, OnDestroy {
       this.gameForm.get('text').value,
       this.gameForm.get('lastWords').value)
       .subscribe(
-        (data) => {
-          console.log(data);
+        () => {
           this.router.navigate(['/games/dashboard']);
         }, (error) => {
           console.log(error);

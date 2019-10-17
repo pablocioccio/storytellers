@@ -1,6 +1,7 @@
 import { NowRequest, NowResponse } from '@now/node';
 import authenticator = require('../../../lib/authenticator');
 import * as dbManager from '../../../lib/database';
+import notificationSender = require('../../../lib/notificationSender');
 import { IGame } from '../../../model/game';
 import { IPlayer } from '../../../model/player';
 
@@ -64,10 +65,18 @@ export default async (request: NowRequest, response: NowResponse) => {
         updates[`/games/${game.id}/firstWords`] = null;
         updates[`/games/${game.id}/completed`] = true;
     } else {
-        const nextPlayerId = game.players[(game.currentPhraseNumber + 1) % game.players.length].user_id;
-        updates[`/games/${game.id}/currentPlayerId`] = nextPlayerId;
+        const nextPlayer: IPlayer = game.players[(game.currentPhraseNumber + 1) % game.players.length];
+        updates[`/games/${game.id}/currentPlayerId`] = nextPlayer.user_id;
         updates[`/games/${game.id}/currentPhraseNumber`] = game.currentPhraseNumber + 1;
         updates[`/games/${game.id}/firstWords`] = request.body.lastWords;
+
+        // tslint:disable-next-line: max-line-length
+        const nextPlayerNotificationSubscriptionsSnapshot = await database.ref(`/user-notifications/${nextPlayer.user_id}`).once('value');
+        const nextPlayerNotificationSubscriptions = nextPlayerNotificationSubscriptionsSnapshot.val();
+        if (nextPlayerNotificationSubscriptions) {
+            const notifications = Object.values(nextPlayerNotificationSubscriptions);
+            await notificationSender.sendNotifications(nextPlayer, game, notifications);
+        }
     }
 
     // Update all nodes at once

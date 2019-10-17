@@ -27,7 +27,8 @@ export default async (request: NowRequest, response: NowResponse) => {
         const result: any[] = await Promise.all(
             Object.keys(userGames).map((key: string) => {
                 return database.ref(`/games/${key}`).once('value');
-            }));
+            }),
+        );
         result.forEach((gameSnapshot) => games.push(gameSnapshot.val()));
     }
 

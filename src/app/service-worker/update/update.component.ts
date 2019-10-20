@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, Renderer2 } from '@angular/core';
+import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
 import { SwUpdate } from '@angular/service-worker';
 import { Subscription } from 'rxjs';
 
@@ -9,7 +9,10 @@ import { Subscription } from 'rxjs';
 })
 export class UpdateComponent implements OnInit, OnDestroy {
 
+  @Output() swUpdateAvailable: EventEmitter<boolean> = new EventEmitter();
+
   updateAvailable = false;
+  updateApplied = false;
   swUpdatesSubscription: Subscription;
 
   constructor(private swUpdate: SwUpdate) {
@@ -19,17 +22,31 @@ export class UpdateComponent implements OnInit, OnDestroy {
     if (this.swUpdate.isEnabled) {
       this.swUpdatesSubscription = this.swUpdate.available.subscribe(event => {
         this.updateAvailable = true;
+        this.swUpdateAvailable.emit(true);
       });
       this.swUpdate.checkForUpdate();
     }
   }
 
-  ngOnDestroy() {
-    if (this.swUpdatesSubscription) { this.swUpdatesSubscription.unsubscribe(); }
+  applyUpdate() {
+    this.updateApplied = true;
+    this.swUpdate.activateUpdate()
+      .then(() => {
+        document.location.reload();
+      })
+      .catch(err => {
+        console.log(`Error applying update: ${err}`);
+        this.updateApplied = false;
+      });
   }
 
   rejectUpdate() {
     this.updateAvailable = false;
+    this.swUpdateAvailable.emit(false);
+  }
+
+  ngOnDestroy() {
+    if (this.swUpdatesSubscription) { this.swUpdatesSubscription.unsubscribe(); }
   }
 
 }

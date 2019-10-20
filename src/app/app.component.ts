@@ -7,4 +7,10 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'hello-world-angular';
+  swUpdateAvailable = false;
+
+  blurBackground(value: boolean) {
+    this.swUpdateAvailable = value;
+  }
+
 }

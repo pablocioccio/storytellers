@@ -21,11 +21,11 @@ export default async (request: NowRequest, response: NowResponse) => {
 
     // Retrieve user games from the database
     const userGamesSnapshot = await database.ref(`/user-games/${userId}`).once('value');
-    const userGames: Array<{ [key: string]: { timestamp: Date } }> = userGamesSnapshot.val();
+    const userGames: { [key: string]: { timestamp: Date } } = userGamesSnapshot.val();
 
     if (userGames) {
         const result: any[] = await Promise.all(
-            Object.keys(userGames).map((key: string) => {
+            Object.keys(userGames).reverse().map((key: string) => {
                 return database.ref(`/games/${key}`).once('value');
             }),
         );

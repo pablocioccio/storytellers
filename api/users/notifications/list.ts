@@ -1,4 +1,5 @@
 import { NowRequest, NowResponse } from '@now/node';
+import { PushSubscription } from 'web-push';
 import authenticator = require('../../../lib/authenticator');
 import * as dbManager from '../../../lib/database';
 
@@ -18,7 +19,7 @@ export default async (request: NowRequest, response: NowResponse) => {
 
     const database = dbManager.getDatabase();
     const userNotificationsSnapshot = await database.ref(`/user-notifications/${userId}`).once('value');
-    const userNotifications = userNotificationsSnapshot.val();
+    const userNotifications: PushSubscription[] = userNotificationsSnapshot.val();
     if (userNotifications) { notifications = Object.values(userNotifications); }
 
     response.status(200).send(notifications);

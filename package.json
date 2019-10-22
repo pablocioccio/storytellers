@@ -9,21 +9,22 @@
   "author": "Pablo N. Cioccio",
   "license": "ISC",
   "dependencies": {
-    "@firebase/app": "0.x",
-    "auth0": "^2.19.0",
+    "@firebase/app": "^0.4.20",
+    "auth0": "^2.20.0",
     "axios": "^0.19.0",
-    "firebase-admin": "^8.3.0",
+    "firebase-admin": "^8.6.1",
     "jsonwebtoken": "^8.5.1",
     "jwks-rsa": "^1.6.0",
-    "web-push": "^3.4.0"
+    "web-push": "^3.3.0"
   },
   "devDependencies": {
-    "@firebase/app-types": "0.x",
+    "@firebase/app-types": "^0.4.6",
     "@now/node": "1.0.0",
-    "@types/auth0": "^2.9.21",
-    "@types/jsonwebtoken": "^8.3.3",
-    "tslint": "^5.18.0",
-    "typescript": "^3.5.3"
+    "@types/auth0": "^2.9.22",
+    "@types/jsonwebtoken": "^8.3.5",
+    "@types/web-push": "^3.3.0",
+    "tslint": "^5.20.0",
+    "typescript": "^3.6.4"
   },
   "engines": {
     "node": "10.x"

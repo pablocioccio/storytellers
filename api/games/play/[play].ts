@@ -1,7 +1,7 @@
 import { NowRequest, NowResponse } from '@now/node';
 import authenticator = require('../../../lib/authenticator');
 import * as dbManager from '../../../lib/database';
-import notificationSender = require('../../../lib/notificationSender');
+import * as notificationManager from '../../../lib/notification';
 import { IGame } from '../../../model/game';
 import { IPlayer } from '../../../model/player';
 
@@ -64,23 +64,25 @@ export default async (request: NowRequest, response: NowResponse) => {
         updates[`/games/${game.id}/currentPlayerId`] = null;
         updates[`/games/${game.id}/firstWords`] = null;
         updates[`/games/${game.id}/completed`] = true;
+
+        // Update database information first
+        await database.ref().update(updates);
+
+        // Send asynchronous push notifications to all players
+        notificationManager.sendGameEndNotifications(game);
+
     } else {
         const nextPlayer: IPlayer = game.players[(game.currentPhraseNumber + 1) % game.players.length];
         updates[`/games/${game.id}/currentPlayerId`] = nextPlayer.user_id;
         updates[`/games/${game.id}/currentPhraseNumber`] = game.currentPhraseNumber + 1;
         updates[`/games/${game.id}/firstWords`] = request.body.lastWords;
 
-        // tslint:disable-next-line: max-line-length
-        const nextPlayerNotificationSubscriptionsSnapshot = await database.ref(`/user-notifications/${nextPlayer.user_id}`).once('value');
-        const nextPlayerNotificationSubscriptions = nextPlayerNotificationSubscriptionsSnapshot.val();
-        if (nextPlayerNotificationSubscriptions) {
-            const notifications = Object.values(nextPlayerNotificationSubscriptions);
-            await notificationSender.sendNotifications(nextPlayer, game, notifications);
-        }
+        // Update database information first
+        await database.ref().update(updates);
+
+        // Send asynchronous push notifications to the next player
+        notificationManager.sendNextTurnNotifications(nextPlayer, game);
     }
 
-    // Update all nodes at once
-    const res = await database.ref().update(updates);
-
-    response.status(200).send(res);
+    response.status(200).send({});
 };

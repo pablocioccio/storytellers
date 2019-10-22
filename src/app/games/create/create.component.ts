@@ -68,8 +68,12 @@ export class CreateComponent implements OnInit, OnDestroy {
     this.gameCreationSubmitted = true;
     this.gameCreationSubscription = this.gameService.createGame(
       [this.currentUser, ...this.users], this.numberOfRounds.value, this.title.value
-    ).subscribe(() => {
-      this.router.navigate(['/games/dashboard']);
+    ).subscribe((data) => {
+      if (data && data.id) {
+        this.router.navigate([`/games/play/${data.id}`]);
+      } else {
+        this.router.navigate(['/games/dashboard']);
+      }
     }, (error) => {
       // Clear any previous error messages
       console.log(error);

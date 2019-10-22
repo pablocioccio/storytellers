@@ -1,12 +1,12 @@
 import { Component, OnDestroy, OnInit, Renderer2 } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
+import { AuthenticationService } from 'src/app/authentication/authentication.service';
 import { SpinnerService } from 'src/app/spinner/spinner.service';
+import { User } from 'src/app/users/model/user';
 import { GameService } from '../game.service';
 import { Game } from '../model/game';
-import { AuthenticationService } from 'src/app/authentication/authentication.service';
-import { User } from 'src/app/users/model/user';
 
 @Component({
   selector: 'app-view',
@@ -47,19 +47,23 @@ export class ViewComponent implements OnInit, OnDestroy {
       this.renderer.setStyle(element, 'border-radius', '0.25rem');
       switch (playerNumber % 5) {
         case 0:
-          this.renderer.addClass(element, 'bg-success');
+          this.renderer.addClass(element, 'bg-warning');
           break;
         case 1:
-          this.renderer.addClass(element, 'bg-danger');
+          this.renderer.addClass(element, 'bg-success');
+          this.renderer.addClass(element, 'text-white');
           break;
         case 2:
-          this.renderer.addClass(element, 'bg-primary');
+          this.renderer.addClass(element, 'bg-danger');
+          this.renderer.addClass(element, 'text-white');
           break;
         case 3:
-          this.renderer.addClass(element, 'bg-warning');
+          this.renderer.addClass(element, 'bg-primary');
+          this.renderer.addClass(element, 'text-white');
           break;
         case 4:
           this.renderer.addClass(element, 'bg-dark');
+          this.renderer.addClass(element, 'text-white');
           break;
       }
     });
@@ -73,6 +77,7 @@ export class ViewComponent implements OnInit, OnDestroy {
       this.renderer.removeClass(element, 'bg-warning');
       this.renderer.removeClass(element, 'bg-primary');
       this.renderer.removeClass(element, 'bg-dark');
+      this.renderer.removeClass(element, 'text-white');
     });
   }
 

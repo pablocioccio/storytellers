@@ -91,19 +91,12 @@ export class DashboardComponent implements OnInit {
     }).catch(console.error);
   }
 
-  calculateProgressBarColor(index: number) {
-    switch (index % 5) {
-      case 0:
-        return 'success';
-      case 1:
-        return 'danger';
-      case 2:
-        return 'primary';
-      case 3:
-        return 'warning';
-      case 4:
-        return 'dark';
-    }
+  calculateProgressBarColor(game: Game) {
+    if (game.completed) { return 'success'; }
+    const percentage: number = game.currentPhraseNumber * 100 / (game.rounds * game.players.length);
+    if (percentage <= 33) { return 'danger'; }
+    if (33 < percentage && percentage <= 66) { return 'primary'; }
+    if (percentage > 66) { return 'warning'; }
   }
 
   OnDestroy() {

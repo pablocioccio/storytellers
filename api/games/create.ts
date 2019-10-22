@@ -64,6 +64,7 @@ export default async (request: NowRequest, response: NowResponse) => {
         creatorId,
         currentPhraseNumber: 0,
         currentPlayerId: players[0].user_id,
+        ...request.body.description && { description: request.body.description },
         id: newGameKey,
         players,
         rounds: request.body.rounds,

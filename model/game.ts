@@ -6,6 +6,7 @@ export interface IGame {
     title: string;
     rounds: number;
     creatorId: string;
+    description?: string;
     players: IPlayer[];
     completed: boolean;
     currentPlayerId: string;

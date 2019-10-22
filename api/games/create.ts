@@ -95,5 +95,5 @@ export default async (request: NowRequest, response: NowResponse) => {
     // Update all nodes at once
     const res = await database.ref().update(updates);
 
-    response.status(200).send(res);
+    response.status(200).send({ id: newGameKey });
 };

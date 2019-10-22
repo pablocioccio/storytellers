@@ -10,6 +10,7 @@ export interface Game {
   completed: boolean;
   currentPlayerId: string;
   currentPhraseNumber: number;
+  description?: string;
   firstWords: string;
   timestamp: Date;
   gameData?: GameData[]; // Game data is returned when the game is finished

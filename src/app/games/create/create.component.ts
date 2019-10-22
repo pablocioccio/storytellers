@@ -22,7 +22,7 @@ export class CreateComponent implements OnInit, OnDestroy {
   users: User[] = []; // List of selected users
   numberOfRounds = new FormControl(this.MIN_ROUNDS, [Validators.min(this.MIN_ROUNDS), Validators.max(this.MAX_ROUNDS)]);
   title = new FormControl(null, [Validators.required]);
-
+  description = new FormControl(null, []);
 
   errorMessage: string; // Error message used for alerts
   private errorSubject = new Subject<string>();
@@ -67,7 +67,7 @@ export class CreateComponent implements OnInit, OnDestroy {
   createGame() {
     this.gameCreationSubmitted = true;
     this.gameCreationSubscription = this.gameService.createGame(
-      [this.currentUser, ...this.users], this.numberOfRounds.value, this.title.value
+      [this.currentUser, ...this.users], this.numberOfRounds.value, this.title.value, this.description.value
     ).subscribe((data) => {
       if (data && data.id) {
         this.router.navigate([`/games/play/${data.id}`]);

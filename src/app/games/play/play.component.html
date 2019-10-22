@@ -1,11 +1,10 @@
 <form [formGroup]="gameForm" (ngSubmit)="onSubmit()" *ngIf="game">
 
-  <div class="text-center mb-3" *ngIf="game.currentPhraseNumber === 0">
-    <b>You are the first player of the game!</b>
-  </div>
-  <div class="text-center mb-3" *ngIf="isLastPlayer">
-    <b>You are the last player of the game!</b>
-  </div>
+  <blockquote class="blockquote text-center mb-3">
+    <p class="mb-0">{{game.title}}</p>
+    <footer class="blockquote-footer font-italic" *ngIf="game.description">{{game.description}}</footer>
+  </blockquote>
+
   <div class="input-group mb-3">
     <div class="input-group-prepend" *ngIf="game.currentPhraseNumber > 0">
       <span class="input-group-text text-wrap">... {{game.firstWords}}</span>
@@ -13,7 +12,7 @@
     <textarea id="text" class="form-control"
       [class.is-invalid]="gameForm.controls['text'].errors && (gameForm.controls['text'].dirty || gameForm.controls['text'].touched)"
       [class.is-valid]="gameForm.controls['text'].valid && (gameForm.controls['text'].dirty || gameForm.controls['text'].touched)"
-      formControlName="text" aria-label="Text area" placeholder="Start typing"></textarea>
+      formControlName="text" aria-label="Text area" [placeholder]="calculatePlaceholderText()"></textarea>
     <div class="invalid-feedback">
       <ng-container *ngIf="gameForm.controls['text'].errors?.minWords">
         You need at least

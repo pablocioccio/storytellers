@@ -6,7 +6,15 @@
       <span class="input-group-text">Title</span>
     </div>
     <input id="title" [class.is-invalid]="title.errors" [class.is-valid]="title.valid" [formControl]="title"
-      class="form-control" aria-label="Title">
+      class="form-control" aria-label="Title" placeholder="The title is mandatory">
+  </div>
+
+  <div class="input-group mb-3">
+    <div class="input-group-prepend">
+      <span class="input-group-text">Description</span>
+    </div>
+    <textarea [formControl]="description" placeholder="Type in an optional description" class="form-control"
+      aria-label="Description"></textarea>
   </div>
 
   <app-user-search (selectUser)="userSelected($event)"></app-user-search>

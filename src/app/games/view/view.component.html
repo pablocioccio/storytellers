@@ -3,6 +3,9 @@
   <div class="card mb-3">
     <div class="card-header text-center">
       <h4>{{game.title}}</h4>
+      <footer class="blockquote-footer" *ngIf="game.description">
+        {{game.description}}
+      </footer>
     </div>
     <div class="card-body">
       <p class="card-text text-center text-danger"

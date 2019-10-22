@@ -107,6 +107,12 @@ export class PlayComponent implements OnInit, OnDestroy {
     if (lastWordsRangeForm.enabled && this.minLastWords === this.maxLastWords) { lastWordsRangeForm.disable(); }
   }
 
+  calculatePlaceholderText() {
+    if (this.game.currentPhraseNumber === 0) { return 'You are the first player of the game!'; }
+    if (this.isLastPlayer) { return 'You are the last player of the game!'; }
+    return '';
+  }
+
   onSubmit() {
     this.postSubmitted = true;
     this.phrasePostSubscription = this.gameService.postPhrase(

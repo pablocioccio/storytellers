@@ -1,9 +1,9 @@
 <div *ngIf="game" class="container-fluid">
 
   <div class="card mb-3">
-    <div class="card-header text-center">
+    <div class="card-header text-center notranslate">
       <h4>{{game.title}}</h4>
-      <footer class="blockquote-footer" *ngIf="game.description">
+      <footer class="blockquote-footer notranslate" *ngIf="game.description">
         {{game.description}}
       </footer>
     </div>
@@ -22,7 +22,7 @@
       </p>
       <ng-container *ngIf="game.completed">
         <span *ngFor="let data of game.gameData; let i = index;"
-          [ngClass]="['game-data-' + i % game.players.length, 'text-wrap']">
+          [ngClass]="['game-data-' + i % game.players.length, 'text-wrap', 'notranslate']">
           <ngb-highlight [result]="data.phrase + ' '" [term]="data.lastWords"></ngb-highlight>
         </span>
       </ng-container>

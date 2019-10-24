@@ -1,13 +1,13 @@
 <form [formGroup]="gameForm" (ngSubmit)="onSubmit()" *ngIf="game">
 
-  <blockquote class="blockquote text-center mb-3">
+  <blockquote class="blockquote text-center notranslate mb-3">
     <p class="mb-0">{{game.title}}</p>
     <footer class="blockquote-footer font-italic" *ngIf="game.description">{{game.description}}</footer>
   </blockquote>
 
   <div class="input-group mb-3">
     <div class="input-group-prepend" *ngIf="game.currentPhraseNumber > 0">
-      <span class="input-group-text text-wrap">... {{game.firstWords}}</span>
+      <span class="input-group-text text-wrap notranslate">... {{game.firstWords}}</span>
     </div>
     <textarea id="text" class="form-control"
       [class.is-invalid]="gameForm.controls['text'].errors && (gameForm.controls['text'].dirty || gameForm.controls['text'].touched)"
@@ -33,7 +33,7 @@
   </div>
 
   <div #lastWordsContainerTooltip="ngbTooltip" *ngIf="!isLastPlayer"
-    class="shadow text-right text-break p-3 mb-3 bg-white rounded border border-info"
+    class="shadow text-right text-break bg-white rounded border border-info notranslate p-3 mb-3"
     ngbTooltip="This is what the next player will see" triggers="manual">
     ... {{gameForm.value.lastWords}}
   </div>

@@ -68,8 +68,8 @@ export default async (request: NowRequest, response: NowResponse) => {
         // Update database information first
         await database.ref().update(updates);
 
-        // Send asynchronous push notifications to all players
-        notificationManager.sendGameEndNotifications(game);
+        // Send push notifications to all players
+        await notificationManager.sendGameEndNotifications(game);
 
     } else {
         const nextPlayer: IPlayer = game.players[(game.currentPhraseNumber + 1) % game.players.length];
@@ -80,8 +80,8 @@ export default async (request: NowRequest, response: NowResponse) => {
         // Update database information first
         await database.ref().update(updates);
 
-        // Send asynchronous push notifications to the next player
-        notificationManager.sendNextTurnNotifications(nextPlayer, game);
+        // Send push notifications to the next player
+        await notificationManager.sendNextTurnNotifications(nextPlayer, game);
     }
 
     response.status(200).send({});

@@ -1,4 +1,4 @@
-import { NowRequest, NowResponse } from '@now/node';
+import { NowRequest, NowResponse } from '@vercel/node';
 import { AppMetadata, ManagementClient, User, UserMetadata } from 'auth0';
 
 /**

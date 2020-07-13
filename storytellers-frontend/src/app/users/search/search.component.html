@@ -1,6 +1,7 @@
 <ng-template #rt let-r="result" let-t="term">
   <div class="d-flex align-items-center" style="height: 45px;">
-    <img [src]="r['picture']" class="rounded-circle" width="40px;">
+    <img [src]="r['picture']" class="rounded-circle" width="40px;"
+      onerror="this.onerror=null;this.src='assets/images/profile.svg';">
     <ngb-highlight [class]="'m-2'" [result]="r.name" [term]="t"></ngb-highlight>
     <ngb-highlight [class]="'d-none d-sm-block'" [result]="' (' + r.email + ') '" [term]="t"></ngb-highlight>
   </div>

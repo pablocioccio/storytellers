@@ -42,7 +42,8 @@
       <tr *ngFor="let player of game.players; let i = index;" (mouseover)="addHighlight(i)"
         (mouseout)="removeHighlight(i)">
         <th scope="row">{{i + 1}}</th>
-        <td><img [src]="player.picture" class="rounded-circle" width="40px;"></td>
+        <td><img [src]="player.picture" class="rounded-circle" width="40px;"
+            onerror="this.onerror=null;this.src='assets/images/profile.svg';"></td>
         <td>{{player.name}}</td>
       </tr>
     </tbody>

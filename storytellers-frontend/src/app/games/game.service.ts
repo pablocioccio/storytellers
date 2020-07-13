@@ -34,7 +34,7 @@ export class GameService {
     return this.http.get('/api/games/list').pipe(
       map((data: Game[]) => data),
       catchError(error => {
-        return throwError(`There was a problem listing games: ${error}`);
+        return throwError(`There was a problem listing games: ${JSON.stringify(error)}`);
       })
     );
   }

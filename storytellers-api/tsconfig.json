@@ -5,5 +5,8 @@
     "sourceMap": true,
     "strict": true,
     "allowJs": true
-  }
+  },
+  "exclude": [
+    "index.js"
+  ]
 }

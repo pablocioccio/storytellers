@@ -12,10 +12,10 @@ export class AuthenticationService {
   // Create an observable of Auth0 instance of client
   auth0Client$ = (from(
     createAuth0Client({
-      domain: 'dev--cxipk7a.auth0.com',
-      client_id: 'giE2A8lRcJ3MTVBmn0Nj6TSflB6iJYHo',
+      domain: 'storytellers.eu.auth0.com',
+      client_id: 'Iug01jzOGFLr1SChRsWnnwcRYss9uMxT',
       redirect_uri: `${window.location.origin}/callback`,
-      audience: 'https://test-api.pablocioccio.now.sh'
+      audience: 'https://storytellers-api.vercel.app'
     })
   ) as Observable<Auth0Client>).pipe(
     shareReplay(1), // Every subscription receives the same shared value
@@ -124,7 +124,7 @@ export class AuthenticationService {
     this.auth0Client$.subscribe((client: Auth0Client) => {
       // Call method to log out
       client.logout({
-        client_id: 'giE2A8lRcJ3MTVBmn0Nj6TSflB6iJYHo',
+        client_id: 'Iug01jzOGFLr1SChRsWnnwcRYss9uMxT',
         returnTo: `${window.location.origin}`
       });
     });

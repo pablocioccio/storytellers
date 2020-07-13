@@ -41,7 +41,8 @@
       <!-- The current user is always part of the game -->
       <tr>
         <th scope="row">1</th>
-        <td><img [src]="currentUser.picture" class="rounded-circle" width="40px;"></td>
+        <td><img [src]="currentUser.picture" class="rounded-circle" width="40px;"
+            onerror="this.onerror=null;this.src='assets/images/profile.svg';"></td>
         <td>{{currentUser.name}}</td>
         <td class="d-none d-md-block">{{currentUser.email}}</td>
         <td></td>
@@ -49,7 +50,8 @@
       <!-- Other users -->
       <tr *ngFor="let user of users; let i = index;">
         <th scope="row">{{i + 2}}</th>
-        <td><img [src]="user.picture" class="rounded-circle" width="40px;"></td>
+        <td><img [src]="user.picture" class="rounded-circle" width="40px;"
+            onerror="this.onerror=null;this.src='assets/images/profile.svg';"></td>
         <td>{{user.name}}</td>
         <td class="d-none d-md-block">{{user.email}}</td>
         <td>

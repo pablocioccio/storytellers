@@ -1,4 +1,4 @@
-# HelloWorldAngular
+# Storytellers
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 8.0.3.
 
@@ -7,6 +7,6 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
 ```
 npm i -g http-server
 ng build --prod
-cd dist/hello-world-angular
+cd dist/storytellers-frontend
 http-server -p 4200 --proxy http://localhost:3000
 ```

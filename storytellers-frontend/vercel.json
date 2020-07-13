@@ -3,7 +3,7 @@
   "routes": [
     {
       "src": "/api/(.+)",
-      "dest": "https://test-api.pablocioccio.now.sh/api/$1"
+      "dest": "https://storytellers-api.vercel.app/api/$1"
     }
   ]
 }

@@ -1,4 +1,4 @@
-import { NowRequest, NowResponse } from '@now/node';
+import { NowRequest, NowResponse } from '@vercel/node';
 import { PushSubscription } from 'web-push';
 import authenticator = require('../../../lib/authenticator');
 import * as dbManager from '../../../lib/database';

@@ -19,10 +19,10 @@
   },
   "devDependencies": {
     "@firebase/app-types": "^0.4.6",
-    "@now/node": "1.0.0",
     "@types/auth0": "^2.9.22",
     "@types/jsonwebtoken": "^8.3.5",
     "@types/web-push": "^3.3.0",
+    "@vercel/node": "^1.7.2",
     "tslint": "^5.20.0",
     "typescript": "^3.6.4"
   },

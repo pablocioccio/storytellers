@@ -1,7 +1,14 @@
 <div class="jumbotron">
-    <h1 class="display-4">Hello, world!</h1>
-    <p class="lead">This is a simple hero unit, a simple jumbotron-style component for calling extra attention to featured content or information.</p>
-    <hr class="my-4">
-    <p>It uses utility classes for typography and spacing to space content out within the larger container.</p>
-    <a class="btn btn-primary btn-lg" href="#" role="button">Learn more</a>
-  </div>
+  <h1 class="display-4">Welcome to Storytellers!</h1>
+  <p class="lead">Get ready to unleash the collective imagination.</p>
+  <hr class="my-4">
+  <p>
+    <b>Storytellers</b> is based on a popular technique known as <a
+      href="https://en.wikipedia.org/wiki/Exquisite_corpse" target="_blank">Exquisite Corpse</a>. Players take turns to
+    write a story, using the last words of the previous participant as the only context. And once all rounds are
+    finished, the results are finally exposed to writers, revealing the most hilarious and absurd narrations.
+  </p>
+  <a class="btn btn-primary btn-lg" *ngIf="!auth.loggedIn" href="#" (click)="auth.login()" role="button">Log in</a>
+  <a class="btn btn-primary btn-lg" *ngIf="auth.loggedIn" href="#" routerLink="/games/dashboard"
+    role="button">Dashboard</a>
+</div>

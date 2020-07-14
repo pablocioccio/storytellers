@@ -1,0 +1,1 @@
+Keep this post handy when trying to add complex secrets (such as a private key): https://github.com/vercel/vercel/issues/749#issuecomment-533873759

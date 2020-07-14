@@ -4,6 +4,10 @@
         "authentication_domain": "@authentication_domain",
         "authentication_mgmt_api_clientid": "@authentication_mgmt_api_clientid",
         "authentication_mgmt_api_secret": "@authentication_mgmt_api_secret",
+        "firebase_client_email": "@firebase_client_email",
+        "firebase_private_key": "@firebase_private_key",
+        "firebase_project_id": "@firebase_project_id",
+        "firebase_database_url": "@firebase_database_url",
         "user_notifications_vapid_public_key": "@user_notifications_vapid_public_key",
         "user_notifications_vapid_private_key": "@user_notifications_vapid_private_key"
     }

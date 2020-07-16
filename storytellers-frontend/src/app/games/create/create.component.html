@@ -3,10 +3,11 @@
 
   <div class="input-group mb-3">
     <div class="input-group-prepend">
-      <span class="input-group-text">Title</span>
+      <span class="input-group-text">Title (*)</span>
     </div>
-    <input id="title" [class.is-invalid]="title.errors" [class.is-valid]="title.valid" [formControl]="title"
-      class="form-control" aria-label="Title" placeholder="The title is mandatory">
+    <input id="title" aria-label="Title" class="form-control" placeholder="Type in a title for your game"
+      [class.is-valid]="title.valid && (title.dirty || title.touched)" [formControl]="title"
+      [class.is-invalid]="title.invalid && (title.dirty || title.touched)">
   </div>
 
   <div class="input-group mb-3">
@@ -17,51 +18,67 @@
       aria-label="Description"></textarea>
   </div>
 
-  <app-user-search (selectUser)="userSelected($event)"></app-user-search>
-  <table class="table table-hover mt-2">
-    <caption *ngIf="users.length === 0" class="text-danger">
-      You need at least one more player to create a game.
-    </caption>
-    <caption *ngIf="users.length > 0 && users.length < MAX_PLAYERS" class="text-success">
-      You are ready to go! You can still add up to <strong>{{MAX_PLAYERS - users.length}}</strong> more player(s).
-    </caption>
-    <caption *ngIf="users.length === MAX_PLAYERS" class="text-warning">
-      You have reached the maximum number of players.
-    </caption>
-    <thead class="thead-dark">
-      <tr>
-        <th scope="col">#</th>
-        <th scope="col">Avatar</th>
-        <th scope="col">Name</th>
-        <th class="d-none d-md-block" scope="col">Email</th>
-        <th scope="col"></th>
-      </tr>
-    </thead>
-    <tbody *ngIf="currentUser">
-      <!-- The current user is always part of the game -->
-      <tr>
-        <th scope="row">1</th>
-        <td><img [src]="currentUser.picture" class="rounded-circle" width="40px;"
-            onerror="this.onerror=null;this.src='assets/images/profile.svg';"></td>
-        <td>{{currentUser.name}}</td>
-        <td class="d-none d-md-block">{{currentUser.email}}</td>
-        <td></td>
-      </tr>
-      <!-- Other users -->
-      <tr *ngFor="let user of users; let i = index;">
-        <th scope="row">{{i + 2}}</th>
-        <td><img [src]="user.picture" class="rounded-circle" width="40px;"
-            onerror="this.onerror=null;this.src='assets/images/profile.svg';"></td>
-        <td>{{user.name}}</td>
-        <td class="d-none d-md-block">{{user.email}}</td>
-        <td>
-          <button type="button" class="close m-2" aria-label="Close" (click)="removeUser(user.user_id)">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+  <div class="input-group mb-3">
+    <input id="email" type="email" [formControl]="email" class="form-control" aria-label="Email"
+      [class.is-valid]="email.valid && email.value && email.value.trim() && (email.dirty || email.touched)"
+      [class.is-invalid]="email.invalid && (email.dirty || email.touched)" placeholder="Enter player email">
+    <div class="input-group-append">
+      <button class="btn btn-primary" type="button" id="addPlayer" aria-label="Add player"
+        [disabled]="players.length >= MAX_PLAYERS || !email.value || email.invalid" (click)="addPlayer()">
+        <b>+</b>
+      </button>
+    </div>
+    <div class="invalid-feedback">
+      <ng-container *ngIf="email.invalid">
+        You have to enter a valid email address.
+      </ng-container>
+    </div>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table table-hover mt-2">
+      <caption *ngIf="players.length === 0" class="text-danger">
+        You need at least one more player to create a game.
+      </caption>
+      <caption *ngIf="players.length > 0 && players.length < MAX_PLAYERS" class="text-success">
+        You are ready to go! You can still add up to <strong>{{MAX_PLAYERS - players.length}}</strong> more player(s).
+      </caption>
+      <caption *ngIf="players.length === MAX_PLAYERS" class="text-warning">
+        You have reached the maximum number of players.
+      </caption>
+      <thead class="thead-dark">
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">Avatar</th>
+          <th scope="col">Email</th>
+          <th scope="col"></th>
+        </tr>
+      </thead>
+      <tbody *ngIf="currentUser">
+        <!-- The current user is always part of the game -->
+        <tr>
+          <th scope="row">1</th>
+          <td>
+            <img [src]="currentUser.picture" class="rounded-circle" width="40px;"
+              onerror="this.onerror=null;this.src='assets/images/profile.svg';">
+          </td>
+          <td>{{currentUser.email}}</td>
+          <td></td>
+        </tr>
+        <!-- Other players -->
+        <tr *ngFor="let player of players; let i = index;">
+          <th scope="row">{{i + 2}}</th>
+          <td><img src='assets/images/profile.svg' class="rounded-circle" width="40px;"></td>
+          <td>{{player}}</td>
+          <td>
+            <button type="button" class="close m-2" aria-label="Close" (click)="removePlayer(player)">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 
   <div class="d-flex mb-3">
     <div class="p-2">
@@ -75,7 +92,7 @@
 
   <div class="text-center">
     <button type="button" class="btn btn-primary"
-      [disabled]="users.length < 1 || users.length > MAX_PLAYERS || numberOfRounds.invalid || title.invalid"
+      [disabled]="players.length < 1 || players.length > MAX_PLAYERS || numberOfRounds.invalid || title.invalid"
       (click)="createGame();">
       <span *ngIf="gameCreationSubmitted" class="spinner-border spinner-border-sm" role="status" aria-hidden="true">
       </span>

@@ -9,15 +9,6 @@ export class UserService {
 
   constructor(private http: HttpClient) { }
 
-  search(term: string) {
-    if (term === '') {
-      return of([]);
-    }
-
-    return this.http
-      .get('/api/users/search', { params: { term } });
-  }
-
   subscribeToNotifications(subscription: PushSubscription) {
     return this.http.post('/api/users/notifications/subscribe', subscription);
   }

@@ -15,7 +15,6 @@ import { ViewComponent } from './games/view/view.component';
 import { NavbarComponent } from './navbar/navbar.component';
 import { ProfileComponent } from './profile/profile.component';
 import { SpinnerComponent } from './spinner/spinner.component';
-import { SearchComponent } from './users/search/search.component';
 import { WelcomeComponent } from './welcome/welcome.component';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
@@ -29,7 +28,6 @@ import { UpdateComponent } from './service-worker/update/update.component';
     CallbackComponent,
     ProfileComponent,
     FirebaseComponent,
-    SearchComponent,
     CreateComponent,
     WelcomeComponent,
     PlayComponent,

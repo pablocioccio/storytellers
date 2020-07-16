@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormControl, Validators } from '@angular/forms';
+import { AbstractControl, FormControl, ValidatorFn, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Subject, Subscription } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
@@ -19,10 +19,12 @@ export class CreateComponent implements OnInit, OnDestroy {
   MAX_ROUNDS = 20;
 
   currentUser: User; // The current user is always part of the game
-  users: User[] = []; // List of selected users
-  numberOfRounds = new FormControl(this.MIN_ROUNDS, [Validators.min(this.MIN_ROUNDS), Validators.max(this.MAX_ROUNDS)]);
-  title = new FormControl(null, [Validators.required]);
+  players: string[] = []; // List of players' emails
+
+  title = new FormControl(null, [notBlank()]);
   description = new FormControl(null, []);
+  email = new FormControl(null, [Validators.email]);
+  numberOfRounds = new FormControl(this.MIN_ROUNDS, [Validators.min(this.MIN_ROUNDS), Validators.max(this.MAX_ROUNDS)]);
 
   errorMessage: string; // Error message used for alerts
   private errorSubject = new Subject<string>();
@@ -44,30 +46,38 @@ export class CreateComponent implements OnInit, OnDestroy {
     });
   }
 
-  userSelected(user: User) {
+  addPlayer() {
     // Clear any previous error messages
     this.errorMessage = null;
 
-    // Use destructuring to unpack the "id" property of User
-    if (this.currentUser.user_id === user.user_id || this.users.find(({ user_id }) => user_id === user.user_id)) {
-      return this.errorSubject.next(`Player '${user.name}' was already added.`);
+    if (this.email.invalid) {
+      return this.errorSubject.next(`Invalid email address.`);
     }
 
-    if (this.users.length === this.MAX_PLAYERS) {
-      return this.errorSubject.next(`Only ${this.MAX_PLAYERS + 1} players are allowed per game.`);
+    if (!this.email.value || !this.email.value.trim()) {
+      return this.errorSubject.next(`Email address cannot be blank.`);
     }
 
-    this.users.push(user);
+    if (this.currentUser.email === this.email.value.trim()) {
+      return this.errorSubject.next(`That's your own email address!`);
+    }
+
+    if (this.players.find((value) => this.email.value.trim() === value)) {
+      return this.errorSubject.next(`Email '${this.email.value}' was already added.`);
+    }
+
+    this.players.push(this.email.value.trim());
+    this.email.reset();
   }
 
-  removeUser(id: string) {
-    this.users.splice(this.users.findIndex(({ user_id }) => id === user_id), 1);
+  removePlayer(playerEmail: string) {
+    this.players.splice(this.players.findIndex((value) => playerEmail === value), 1);
   }
 
   createGame() {
     this.gameCreationSubmitted = true;
     this.gameCreationSubscription = this.gameService.createGame(
-      [this.currentUser, ...this.users], this.numberOfRounds.value, this.title.value, this.description.value
+      this.players, this.numberOfRounds.value, this.title.value, this.description.value
     ).subscribe((data) => {
       if (data && data.id) {
         this.router.navigate([`/games/play/${data.id}`]);
@@ -88,4 +98,12 @@ export class CreateComponent implements OnInit, OnDestroy {
     if (this.gameCreationSubscription) { this.gameCreationSubscription.unsubscribe(); }
   }
 
+}
+
+export function notBlank(): ValidatorFn {
+  return (control: AbstractControl): { [key: string]: any } | null => {
+    return control.value && control.value.trim() ? null : {
+      notBlank: { valid: false }
+    };
+  };
 }

@@ -19,8 +19,8 @@ export default async (request: NowRequest, response: NowResponse) => {
 
     const database = dbManager.getDatabase();
 
-    // Retrieve user games from the database
-    const userGamesSnapshot = await database.ref(`/user-games/${userId}`).once('value');
+    // Retrieve user games from the database (we are able to sort results by timestamp, but only in ascending order)
+    const userGamesSnapshot = await database.ref(`/user-games/${userId}`).orderByChild('timestamp').once('value');
     const userGames: { [key: string]: { timestamp: Date } } = userGamesSnapshot.val();
 
     if (userGames) {

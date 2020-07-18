@@ -4,6 +4,8 @@
         "authentication_domain": "@authentication_domain",
         "authentication_mgmt_api_clientid": "@authentication_mgmt_api_clientid",
         "authentication_mgmt_api_secret": "@authentication_mgmt_api_secret",
+        "email_account": "@email_account",
+        "email_password": "@email_password",
         "firebase_client_email": "@firebase_client_email",
         "firebase_private_key": "@firebase_private_key",
         "firebase_project_id": "@firebase_project_id",

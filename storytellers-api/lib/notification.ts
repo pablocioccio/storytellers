@@ -11,7 +11,7 @@ const vapidKeys = {
 };
 
 webpush.setVapidDetails(
-    'mailto:pncioccio@gmail.com',
+    `mailto:${process.env.email_account}`,
     vapidKeys.publicKey,
     vapidKeys.privateKey,
 );

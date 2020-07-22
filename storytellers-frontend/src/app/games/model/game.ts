@@ -6,6 +6,7 @@ export interface Game {
   title: string;
   rounds: number;
   players: User[];
+  invitations: { [key: string]: { email: string } };
   creator: string;
   completed: boolean;
   currentPlayerId: string;

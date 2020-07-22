@@ -19,7 +19,7 @@ import { WelcomeComponent } from './welcome/welcome.component';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
 import { UpdateComponent } from './service-worker/update/update.component';
-
+import { InvitationComponent } from './games/invitation/invitation.component';
 
 @NgModule({
   declarations: [
@@ -34,7 +34,8 @@ import { UpdateComponent } from './service-worker/update/update.component';
     SpinnerComponent,
     ViewComponent,
     DashboardComponent,
-    UpdateComponent
+    UpdateComponent,
+    InvitationComponent,
   ],
   imports: [
     BrowserModule,

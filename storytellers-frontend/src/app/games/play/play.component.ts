@@ -23,6 +23,7 @@ export class PlayComponent implements OnInit, OnDestroy {
     lastWordsRange: new FormControl({ value: 1, disabled: true })
   });
 
+  errorMessage: string;
   currentUserId: string;
 
   minLastWords = 1;
@@ -44,7 +45,7 @@ export class PlayComponent implements OnInit, OnDestroy {
       tooltip.open();
       setTimeout(() => {
         tooltip.close();
-      }, 3000);
+      }, 5000);
     }
   }
 
@@ -64,12 +65,14 @@ export class PlayComponent implements OnInit, OnDestroy {
         this.spinnerService.show();
         // Clear the existing game (if any)
         this.game = undefined;
+        // Clear the error message (if any)
+        this.errorMessage = undefined;
         // Retrieve the game that was passed by id
         return this.gameService.getGame(params.get('id'));
       })
     ).subscribe((game: Game) => {
-      // The game is either finished or it's not the user's turn
-      if (game.completed || this.currentUserId !== game.currentPlayerId) {
+      // The game is either finished, there are pending invitations or it's not the user's turn
+      if (game.completed || game.invitations || this.currentUserId !== game.currentPlayerId) {
         this.router.navigate(['/games/dashboard']);
       }
 
@@ -83,6 +86,9 @@ export class PlayComponent implements OnInit, OnDestroy {
 
       this.game = game;
       this.spinnerService.hide();
+    }, (error) => {
+      this.spinnerService.hide();
+      this.errorMessage = error.message ? error.message : 'There was a problem retrieving the game';
     });
 
     this.textChangeSubscription = this.gameForm.get('text').valueChanges.subscribe((text: string) => {
@@ -119,13 +125,13 @@ export class PlayComponent implements OnInit, OnDestroy {
       this.game.id,
       this.gameForm.get('text').value,
       this.gameForm.get('lastWords').value)
-      .subscribe(
-        () => {
-          this.router.navigate(['/games/dashboard']);
-        }, (error) => {
-          console.log(error);
-          this.postSubmitted = false;
-        });
+      .subscribe(() => {
+        this.router.navigate(['/games/dashboard']);
+      }, (error) => {
+        this.errorMessage = error.message ? error.message : 'There was problem posting the phrase';
+        setTimeout(() => this.errorMessage = null, 5000);
+        this.postSubmitted = false;
+      });
   }
 
   ngOnDestroy() {

@@ -29,21 +29,26 @@ export class CreateComponent implements OnInit, OnDestroy {
   errorMessage: string; // Error message used for alerts
   private errorSubject = new Subject<string>();
 
-  currentUserSubscription: Subscription;
-  gameCreationSubscription: Subscription;
+  // We create a base subscription and use it to add children subscriptions
+  subscription: Subscription = new Subscription();
 
   gameCreationSubmitted = false;
 
   constructor(public auth: AuthenticationService, private gameService: GameService, private router: Router) { }
 
   ngOnInit() {
-    this.errorSubject.subscribe((message) => this.errorMessage = message);
-    this.errorSubject.pipe(
-      debounceTime(3000)
-    ).subscribe(() => this.errorMessage = null);
-    this.currentUserSubscription = this.auth.userProfile$.subscribe((user: any) => {
+    // Get the current user
+    this.subscription.add(this.auth.userProfile$.subscribe((user: any) => {
       this.currentUser = { user_id: user.sub, name: user.name, email: user.email, picture: user.picture };
-    });
+    }));
+    // Subscribe to the error subject, so that the error message is updated every time it emits a value
+    this.subscription.add(this.errorSubject.subscribe((message) => this.errorMessage = message));
+    // Subscribe again to the error subject, but adding a 5000 ms delay before the previous error message is cleared
+    this.subscription.add(
+      this.errorSubject.pipe(
+        debounceTime(5000)
+      ).subscribe(() => this.errorMessage = null)
+    );
   }
 
   addPlayer() {
@@ -76,26 +81,25 @@ export class CreateComponent implements OnInit, OnDestroy {
 
   createGame() {
     this.gameCreationSubmitted = true;
-    this.gameCreationSubscription = this.gameService.createGame(
-      this.players, this.numberOfRounds.value, this.title.value, this.description.value
-    ).subscribe((data) => {
-      if (data && data.id) {
-        this.router.navigate([`/games/play/${data.id}`]);
-      } else {
-        this.router.navigate(['/games/dashboard']);
-      }
-    }, (error) => {
-      // Clear any previous error messages
-      console.log(error);
-      this.errorMessage = null;
-      this.errorSubject.next('There was an error creating the game.');
-      this.gameCreationSubmitted = false;
-    });
+    this.subscription.add(
+      this.gameService.createGame(
+        this.players, this.numberOfRounds.value, this.title.value.trim(), this.description.value
+      ).subscribe((data) => {
+        if (data && data.id) {
+          this.router.navigate([`/games/${data.id}`]);
+        } else {
+          this.router.navigate(['/games/dashboard']);
+        }
+      }, (error) => {
+        this.errorMessage = null;
+        this.errorSubject.next(error.message ? error.message : 'There was an error creating the game.');
+        this.gameCreationSubmitted = false;
+      })
+    );
   }
 
   ngOnDestroy() {
-    this.currentUserSubscription.unsubscribe();
-    if (this.gameCreationSubscription) { this.gameCreationSubscription.unsubscribe(); }
+    this.subscription.unsubscribe();
   }
 
 }

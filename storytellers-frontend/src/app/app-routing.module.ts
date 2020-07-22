@@ -5,6 +5,7 @@ import { CallbackComponent } from './authentication/callback/callback.component'
 import { FirebaseComponent } from './firebase/firebase.component';
 import { CreateComponent } from './games/create/create.component';
 import { DashboardComponent } from './games/dashboard/dashboard.component';
+import { InvitationComponent } from './games/invitation/invitation.component';
 import { PlayComponent } from './games/play/play.component';
 import { ViewComponent } from './games/view/view.component';
 import { ProfileComponent } from './profile/profile.component';
@@ -36,13 +37,18 @@ const routes: Routes = [
     canActivate: [AuthGuard]
   },
   {
-    path: 'games/play/:id',
+    path: 'games/:id',
+    component: ViewComponent,
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'games/:id/play',
     component: PlayComponent,
     canActivate: [AuthGuard]
   },
   {
-    path: 'games/:id',
-    component: ViewComponent,
+    path: 'games/:gameId/invitation/:invitationId',
+    component: InvitationComponent,
     canActivate: [AuthGuard]
   },
   {

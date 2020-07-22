@@ -1,5 +1,4 @@
 const util = require('util');
-const helper = require("./helper");
 const jwt = require('jsonwebtoken');
 const jwksClient = require('jwks-rsa');
 
@@ -14,6 +13,14 @@ function getSigningKey(header, callback) {
     })
 }
 
+function extractAuthTokenFromHeaders(headers) {
+    let authorizationHeader = headers.authorization || '';
+    if (authorizationHeader.split(' ')[0] === 'Bearer') {
+        authorizationHeader = authorizationHeader.split(' ')[1];
+    }
+    return authorizationHeader;
+}
+
 /**
  * Validate token, decode it, and return its payload.
  */
@@ -23,7 +30,7 @@ async function decodeToken(token) {
 }
 
 exports.handler = async (headers) => {
-    const token = helper.extractAuthTokenFromHeaders(headers);
+    const token = extractAuthTokenFromHeaders(headers);
     const payload = await decodeToken(token);
     return payload;
 }

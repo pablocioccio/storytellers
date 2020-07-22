@@ -1,0 +1,75 @@
+<ngb-alert *ngIf="errorMessage" [type]="'danger'" [dismissible]="false">{{ errorMessage }}</ngb-alert>
+
+<div *ngIf="game" class="container-fluid">
+
+  <blockquote class="blockquote text-center notranslate mb-3">
+    <p class="mb-0">{{game.title}}</p>
+    <footer class="blockquote-footer font-italic" *ngIf="game.description">{{game.description}}</footer>
+  </blockquote>
+
+  <div class="table-responsive">
+    <table class="table mt-2 border">
+      <thead>
+        <tr class="thead-dark">
+          <th colspan="3" class="text-center">Current players</th>
+        </tr>
+        <tr class="table-info">
+          <th>#</th>
+          <th>Avatar</th>
+          <th>Name</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let player of game.players; let i = index;">
+          <th scope="row">{{i + 1}}</th>
+          <td>
+            <img [src]="player.picture" class="rounded-circle" width="40px;"
+              onerror="this.onerror=null;this.src='assets/images/profile.svg';">
+          </td>
+          <td>{{player.name}}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table mt-2 border">
+      <thead>
+        <tr class="bg-dark text-white">
+          <th colspan="3" class="text-center">Pending invitations</th>
+        </tr>
+        <tr class="table-info">
+          <th>#</th>
+          <th>Avatar</th>
+          <th>Email</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let invitation of game.invitations | keyvalue; let i = index;">
+          <th scope="row">{{i + 1}}</th>
+          <td>
+            <img src="assets/images/profile.svg" class="rounded-circle" width="40px;">
+          </td>
+          <td>{{invitation.value.email}}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="text-center">
+    <blockquote class="blockquote text-center notranslate">
+      <p>Do you accept the invitation?</p>
+    </blockquote>
+    <button type="button" class="btn btn-primary m-2" [disabled]="responseStatus" (click)="accept()">
+      <span *ngIf="responseStatus === 'accepted'" class="spinner-border spinner-border-sm" role="status"
+        aria-hidden="true"></span>
+      Yes
+    </button>
+    <button type="button" class="btn btn-primary m-2" [disabled]="responseStatus" (click)="reject()">
+      <span *ngIf="responseStatus === 'rejected'" class="spinner-border spinner-border-sm" role="status"
+        aria-hidden="true"></span>
+      No
+    </button>
+  </div>
+
+</div>

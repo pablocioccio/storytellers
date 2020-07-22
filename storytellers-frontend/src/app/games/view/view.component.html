@@ -1,3 +1,5 @@
+<ngb-alert *ngIf="errorMessage" [type]="'danger'" [dismissible]="false">{{ errorMessage }}</ngb-alert>
+
 <div *ngIf="game" class="container-fluid">
 
   <div class="card mb-3">
@@ -8,44 +10,84 @@
       </footer>
     </div>
     <div class="card-body">
-      <p class="card-text text-center text-danger"
-        *ngIf="!game.completed && (auth.userProfile$ | async).sub === game.currentPlayerId">
-        It's your turn!
-      </p>
-      <p class="card-text text-center"
-        *ngIf="!game.completed && (auth.userProfile$ | async).sub === game.currentPlayerId">
-        <a [routerLink]="['/games/play', game.id]" class="btn btn-primary stretched-link">Play</a>
-      </p>
-      <p class="card-text text-center"
-        *ngIf="!game.completed && (auth.userProfile$ | async).sub !== game.currentPlayerId">
-        Waiting for&nbsp;<strong><i>{{getUserInfo(game.currentPlayerId, game.players).name}}</i></strong>
-      </p>
+      <ng-container
+        *ngIf="!game.completed && !game.invitations && (auth.userProfile$ | async).sub === game.currentPlayerId">
+        <p class="card-text text-center">
+          It's your turn!
+        </p>
+        <p class="card-text text-center">
+          <a [routerLink]="['/games', game.id]" class="btn btn-primary stretched-link">Play</a>
+        </p>
+      </ng-container>
+      <ng-container
+        *ngIf="!game.completed && !game.invitations && (auth.userProfile$ | async).sub !== game.currentPlayerId">
+        <p class="card-text text-center">
+          Waiting for&nbsp;<strong><i>{{getUserInfo(game.currentPlayerId, game.players).name}}</i></strong>
+        </p>
+      </ng-container>
       <ng-container *ngIf="game.completed">
         <span *ngFor="let data of game.gameData; let i = index;"
           [ngClass]="['game-data-' + i % game.players.length, 'text-wrap', 'notranslate']">
           <ngb-highlight [result]="data.phrase + ' '" [term]="data.lastWords"></ngb-highlight>
         </span>
       </ng-container>
+      <ng-container *ngIf="game.invitations">
+        <p class="card-text text-center">
+          The game has pending invitations.
+        </p>
+      </ng-container>
     </div>
   </div>
 
-  <table class="table table-hover mb-2">
-    <caption *ngIf="game.completed">Hover or tap on a player to see what they wrote</caption>
-    <thead class="thead-dark">
-      <tr>
-        <th scope="col">#</th>
-        <th scope="col">Avatar</th>
-        <th scope="col">Name</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let player of game.players; let i = index;" (mouseover)="addHighlight(i)"
-        (mouseout)="removeHighlight(i)">
-        <th scope="row">{{i + 1}}</th>
-        <td><img [src]="player.picture" class="rounded-circle" width="40px;"
-            onerror="this.onerror=null;this.src='assets/images/profile.svg';"></td>
-        <td>{{player.name}}</td>
-      </tr>
-    </tbody>
-  </table>
+  <div class="table-responsive">
+    <table class="table mt-2 border" [class.table-hover]="!game.invitations">
+      <caption *ngIf="game.completed">Hover or tap on a player to see what they wrote</caption>
+      <thead>
+        <tr class="thead-dark" *ngIf="game.invitations">
+          <th colspan="3" class="text-center">Current players</th>
+        </tr>
+        <tr [class.table-info]="game.invitations" [class.thead-dark]="!game.invitations">
+          <th>#</th>
+          <th>Avatar</th>
+          <th>Name</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let player of game.players; let i = index;" (mouseover)="addHighlight(i)"
+          (mouseout)="removeHighlight(i)">
+          <th scope="row">{{i + 1}}</th>
+          <td>
+            <img [src]="player.picture" class="rounded-circle" width="40px;"
+              onerror="this.onerror=null;this.src='assets/images/profile.svg';">
+          </td>
+          <td>{{player.name}}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="table-responsive" *ngIf="game.invitations">
+    <table class="table mt-2 border">
+      <thead>
+        <tr class="bg-dark text-white">
+          <th colspan="3" class="text-center">Pending invitations</th>
+        </tr>
+        <tr class="table-info">
+          <th>#</th>
+          <th>Avatar</th>
+          <th>Email</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let invitation of game.invitations | keyvalue; let i = index;">
+          <th scope="row">{{i + 1}}</th>
+          <td>
+            <img src="assets/images/profile.svg" class="rounded-circle" width="40px;">
+          </td>
+          <td>{{invitation.value.email}}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
 </div>

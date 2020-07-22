@@ -1,3 +1,5 @@
+<ngb-alert *ngIf="errorMessage" [type]="'danger'" [dismissible]="false">{{ errorMessage }}</ngb-alert>
+
 <form [formGroup]="gameForm" (ngSubmit)="onSubmit()" *ngIf="game">
 
   <blockquote class="blockquote text-center notranslate mb-3">
@@ -38,23 +40,25 @@
     ... {{gameForm.value.lastWords}}
   </div>
 
-  <table class="table table-hover border mb-5">
-    <thead class="thead-dark">
-      <tr>
-        <th scope="col">#</th>
-        <th scope="col">Avatar</th>
-        <th scope="col">Name</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let player of game.players; let i = index;">
-        <th scope="row">{{i + 1}}</th>
-        <td><img [src]="player.picture" class="rounded-circle" width="40px;"
-            onerror="this.onerror=null;this.src='assets/images/profile.svg';"></td>
-        <td>{{player.name}}</td>
-      </tr>
-    </tbody>
-  </table>
+  <div class="table-responsive">
+    <table class="table table-hover border mb-5">
+      <thead class="thead-dark">
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">Avatar</th>
+          <th scope="col">Name</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let player of game.players; let i = index;">
+          <th scope="row">{{i + 1}}</th>
+          <td><img [src]="player.picture" class="rounded-circle" width="40px;"
+              onerror="this.onerror=null;this.src='assets/images/profile.svg';"></td>
+          <td>{{player.name}}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 
   <div class="text-center">
     <button type="submit" class="btn btn-primary" [disabled]="!gameForm.valid">

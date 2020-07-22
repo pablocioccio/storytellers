@@ -21,7 +21,7 @@ Currently, the Angular SW does not support link navigation, so we extended it. *
       a game, since we don't want to interrupt that. */
       for (const client of allClients) {
         const url = new URL(client.url);
-        if (!url.pathname || !url.pathname.startsWith('/games/play')) {
+        if (!url.pathname || !url.pathname.contains('/play')) {
           await client.focus();
           await client.navigate(event.notification.data.url)
           return;

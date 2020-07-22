@@ -1,56 +1,60 @@
 import { NowRequest, NowResponse } from '@vercel/node';
-import { ManagementClient } from 'auth0';
+import * as EmailValidator from 'email-validator';
 import authenticator = require('../../lib/authenticator');
 import * as dbManager from '../../lib/database';
+import * as emailManager from '../../lib/email';
 import { IGame } from '../../model/game';
+import { IInvitations } from '../../model/invitations';
 import { IPlayer } from '../../model/player';
 
 export default async (request: NowRequest, response: NowResponse) => {
-    // Validate JWT and get the creator id
-    let creatorId: string;
+    // Validate JWT and get current user info
+    let creator: IPlayer;
     try {
         const payload = await authenticator.handler(request.headers);
-        creatorId = payload.sub;
+        // Email, name and picture are custom claims that are obtained through Auth0 rules
+        creator = {
+            email: payload['https://storytellers-api.vercel.app/email'],
+            name: payload['https://storytellers-api.vercel.app/name'],
+            picture: payload['https://storytellers-api.vercel.app/picture'],
+            user_id: payload.sub,
+        };
     } catch (error) {
-        console.log(error);
-        response.status(401).json({ error: error.message });
+        console.error(error);
+        response.status(401).json({ message: error.message });
         return;
     }
 
-    const userIds: string[] = request.body.users;
-
-    if (!userIds.includes(creatorId)) {
-        response.status(400).json({ error: 'The creator must be part of the game' });
-        return;
+    // Validate invitations
+    for (const invitation of request.body.invitations) {
+        if (!EmailValidator.validate(invitation)) {
+            const message = `Invalid email address: ${invitation}`;
+            console.error(message);
+            response.status(400).json({ message });
+            return;
+        }
     }
 
-    // Retrieve full user info for each player
-    const query = userIds.map((id) => `user_id:${id}`).join(' OR ');
-    const managementClient: ManagementClient = new ManagementClient({
-        clientId: `${process.env.authentication_mgmt_api_clientid}`,
-        clientSecret: `${process.env.authentication_mgmt_api_secret}`,
-        domain: `${process.env.authentication_domain}`,
-    });
-    const players: IPlayer[] = await managementClient.getUsers({
-        fields: 'user_id,name,email,picture',
-        include_fields: true,
-        q: query,
-        search_engine: 'v3',
-    }) as IPlayer[];
-
-    // The players array needs to be sorted according to the original userIds array
-    players.sort((a: IPlayer, b: IPlayer) => {
-        return userIds.indexOf(a.user_id) - userIds.indexOf(b.user_id);
-    });
-
+    // Get database manager
     const database = dbManager.getDatabase();
 
     // Obtain a key for the new game
     const newGameKey = database.ref().child('games').push().key;
 
     if (newGameKey === null) {
-        response.status(500).json({ error: 'Error creating new game' });
+        response.status(500).json({ message: 'Error creating new game' });
         return;
+    }
+
+    // Generate keys for the invitations
+    const invitations: IInvitations = {};
+    for (const invitation of request.body.invitations) {
+        const invitationKey = database.ref().child(`games/${newGameKey}/invitations`).push().key;
+        if (invitationKey === null) {
+            response.status(500).json({ message: 'Error creating invitations for the new game' });
+            return;
+        }
+        invitations[invitationKey] = { email: invitation };
     }
 
     // Different database nodes will be updated all at once
@@ -61,12 +65,13 @@ export default async (request: NowRequest, response: NowResponse) => {
     // Create the game
     const game: IGame = {
         completed: false,
-        creatorId,
+        creatorId: creator.user_id,
         currentPhraseNumber: 0,
-        currentPlayerId: players[0].user_id,
+        currentPlayerId: creator.user_id,
         ...request.body.description && { description: request.body.description },
         id: newGameKey,
-        players,
+        invitations,
+        players: [creator],
         rounds: request.body.rounds,
         timestamp: currentDate,
         title: request.body.title,
@@ -75,26 +80,27 @@ export default async (request: NowRequest, response: NowResponse) => {
     // Store transaction in the updates array
     updates[`/games/${newGameKey}`] = game;
 
-    // Create an entry for each player in the 'user-games' node
-    Object.values(request.body.users).forEach((user) => {
-        updates[`/user-games/${user}/${newGameKey}`] = {
-            timestamp: currentDate,
-        };
-    });
+    // Create an entry for the only confirmed player so far: the creator
+    updates[`/user-games/${creator.user_id}/${newGameKey}`] = {
+        timestamp: currentDate,
+    };
 
-    const gameData: { [key: number]: { phrase: string, lastWords: string } } = {};
-    for (let i = 0; i < game.rounds * Object.keys(game.players).length; i++) {
-        gameData[i] = {
-            lastWords: '',
-            phrase: '',
-        };
+    try {
+        // Send invitations
+        const subject = `${creator.name} invited you to Storytellers!`;
+        await Promise.all([
+            database.ref().update(updates),
+            ...Object.entries(invitations).map(([invitationKey, invitation]) => {
+                const body = `Hi! ${creator.name} wants you to be part of "${game.title}".\n\n` +
+                    `Follow this link to see your invitation: http://localhost:4200/games/${newGameKey}/invitation/${invitationKey}`;
+                return emailManager.sendEmail(invitation.email, subject, body);
+            }),
+        ]);
+    } catch (error) {
+        console.error(error);
+        response.status(500).json({ error });
+        return;
     }
-
-    // Initialize game posts
-    updates[`/game-data/${newGameKey}`] = gameData;
-
-    // Update all nodes at once
-    const res = await database.ref().update(updates);
 
     response.status(200).send({ id: newGameKey });
 };

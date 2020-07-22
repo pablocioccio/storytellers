@@ -9,8 +9,8 @@ export default async (request: NowRequest, response: NowResponse) => {
         const payload = await authenticator.handler(request.headers);
         userId = payload.sub;
     } catch (error) {
-        console.log(error);
-        response.status(401).json({ error: error.message });
+        console.error(error);
+        response.status(401).json({ message: error.message });
         return;
     }
 

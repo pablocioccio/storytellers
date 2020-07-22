@@ -21,6 +21,7 @@ export class DashboardComponent implements OnInit {
 
 
   games: Game[];
+  errorMessage: string;
   currentUserId: string;
   gamesSubscription: Subscription;
   currentUserSubscription: Subscription;
@@ -40,6 +41,9 @@ export class DashboardComponent implements OnInit {
       if (!games.length) { this.router.navigate(['/games/create']); }
       this.games = games;
       this.spinnerService.hide();
+    }, (error) => {
+      this.spinnerService.hide();
+      this.errorMessage = error.message ? error.message : 'There was a problem listing the games';
     });
     // Retrieve current user profile
     this.currentUserSubscription = this.auth.userProfile$.subscribe((user) => {

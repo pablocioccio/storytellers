@@ -28,7 +28,7 @@ export async function sendNextTurnNotifications(player: IPlayer, game: IGame) {
             badge: 'assets/icons/icon-72x72.png',
             body: `${player.name}, you are up next in ${game.title}`,
             data: {
-                url: `/games/play/${game.id}`,
+                url: `/games/${game.id}/play`,
             },
             icon: 'assets/icons/icon-152x152.png',
             renotify: true,

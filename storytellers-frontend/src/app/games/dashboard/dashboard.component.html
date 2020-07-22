@@ -1,3 +1,5 @@
+<ngb-alert *ngIf="errorMessage" [type]="'danger'" [dismissible]="false">{{ errorMessage }}</ngb-alert>
+
 <div class="card-deck" *ngIf="games">
   <div class="card mb-3" *ngFor="let game of games">
     <div class="card-header d-flex justify-content-center">
@@ -13,11 +15,17 @@
           This game is finished!
           <a [routerLink]="['/games', game.id]" class="stretched-link"></a>
         </p>
-        <p class="card-text text-center text-danger" *ngIf="!game.completed && currentUserId === game.currentPlayerId">
-          It's your turn!
-          <a [routerLink]="['/games/play', game.id]" class="stretched-link"></a>
+        <p class="card-text text-center text-info" *ngIf="game.invitations">
+          This game has pending invitations
+          <a [routerLink]="['/games', game.id]" class="stretched-link"></a>
         </p>
-        <p class="card-text text-center" *ngIf="!game.completed && currentUserId !== game.currentPlayerId">
+        <p class="card-text text-center text-danger"
+          *ngIf="!game.completed && !game.invitations && currentUserId === game.currentPlayerId">
+          It's your turn!
+          <a [routerLink]="['/games', game.id, 'play']" class="stretched-link"></a>
+        </p>
+        <p class="card-text text-center"
+          *ngIf="!game.completed && !game.invitations && currentUserId !== game.currentPlayerId">
           Waiting for&nbsp;<strong><i>{{getUserInfo(game.currentPlayerId, game.players).name}}</i></strong>
           <a [routerLink]="['/games', game.id]" class="stretched-link"></a>
         </p>

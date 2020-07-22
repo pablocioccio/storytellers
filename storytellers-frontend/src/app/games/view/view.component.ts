@@ -16,6 +16,7 @@ import { Game } from '../model/game';
 export class ViewComponent implements OnInit, OnDestroy {
 
   game: Game;
+  errorMessage: string;
   gameSubscription: Subscription;
 
   constructor(
@@ -29,12 +30,17 @@ export class ViewComponent implements OnInit, OnDestroy {
         this.spinnerService.show();
         // Clear the existing game (if any)
         this.game = undefined;
+        // Clear the error message (if any)
+        this.errorMessage = undefined;
         // Retrieve the game that was passed by id
         return this.gameService.getGame(params.get('id'));
       })
     ).subscribe((game: Game) => {
       this.game = game;
       this.spinnerService.hide();
+    }, (error) => {
+      this.spinnerService.hide();
+      this.errorMessage = error.message ? error.message : 'There was a problem retrieving the game';
     });
   }
 

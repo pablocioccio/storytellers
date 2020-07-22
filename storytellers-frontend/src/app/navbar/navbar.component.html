@@ -1,7 +1,6 @@
 <nav class="navbar navbar-expand-sm navbar-dark bg-dark">
   <a class="navbar-brand" href="#">
-    <img class="rounded-circle" src="assets/images/logo.jpg"
-      width="60" height="60" alt="Home">
+    <img class="rounded-circle" src="assets/images/logo.jpg" width="60" height="60" alt="Home">
   </a>
 
   <ul class="navbar-nav mr-auto">
@@ -16,5 +15,9 @@
     </li>
   </ul>
   <button class="btn btn btn-outline-info my-2 my-sm-0" (click)="auth.login()" *ngIf="!auth.loggedIn">Log In</button>
-  <button class="btn btn btn-outline-info my-2 my-sm-0" (click)="auth.logout()" *ngIf="auth.loggedIn">Log Out</button>
+  <ng-container *ngIf="auth.loggedIn">
+    <img [src]="(auth.userProfile$ | async)?.picture" class="rounded-circle mr-2" width="40px;"
+      onerror="this.onerror=null;this.src='assets/images/profile.svg';">
+    <button class="btn btn btn-outline-info my-2 my-sm-0" (click)="auth.logout()" *ngIf="auth.loggedIn">Log Out</button>
+  </ng-container>
 </nav>

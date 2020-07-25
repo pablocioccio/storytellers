@@ -23,3 +23,15 @@ export function sendEmail(recipient: string, subject: string, message: string) {
     return mailTransport.sendMail(mailOptions);
 
 }
+
+/**
+ * Check if two email addresses are equal, taking into
+ *  account that gmail ignores dots in the username.
+ * @param email1
+ * @param email2
+ */
+export function equals(email1: string, email2: string) {
+    return email1 === email2 ||
+        (email1.split('@')[1] === 'gmail.com' && email2.split('@')[1] === 'gmail.com' &&
+            email1.split('@')[0].replace(/\./g, '') === email2.split('@')[0].replace(/\./g, ''));
+}

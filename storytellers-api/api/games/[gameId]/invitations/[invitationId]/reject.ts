@@ -35,7 +35,7 @@ export default async (request: NowRequest, response: NowResponse) => {
         return;
     }
 
-    if (invitation.email !== user.email) {
+    if (!emailManager.equals(invitation.email, user.email)) {
         response.status(401).send({ message: `Invitation was sent to ${invitation.email}, but the user email is ${user.email}.` });
         return;
     }

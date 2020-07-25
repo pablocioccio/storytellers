@@ -1,6 +1,7 @@
 import { NowRequest, NowResponse } from '@vercel/node';
 import authenticator = require('../../lib/authenticator');
 import * as dbManager from '../../lib/database';
+import * as emailManager from '../../lib/email';
 import { IGame } from '../../model/game';
 import { IGameData } from '../../model/game-data';
 import { IPlayer } from '../../model/player';
@@ -43,7 +44,9 @@ export default async (request: NowRequest, response: NowResponse) => {
     }
 
     if (!game.players.map((player: IPlayer) => player.user_id).includes(user.user_id)) {
-        if (!game.invitations || !Object.values(game.invitations).map((entry) => entry.email).includes(user.email)) {
+        if (!game.invitations || !Object.values(game.invitations).find(
+            (entry) => emailManager.equals(entry.email, user.email))
+        ) {
             response.status(401).send({ message: 'You are not allowed to view this game' });
             return;
         }

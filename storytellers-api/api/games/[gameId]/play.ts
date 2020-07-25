@@ -41,10 +41,13 @@ export default async (request: NowRequest, response: NowResponse) => {
     }
 
     if (!game.players.map((player: IPlayer) => player.user_id).includes(user.user_id)) {
-        if (!game.invitations || !Object.values(game.invitations).map((entry) => entry.email).includes(user.email)) {
-            response.status(401).send({ message: 'You are not allowed to play this game' });
-            return;
-        }
+        response.status(401).send({ message: 'You are not allowed to play this game' });
+        return;
+    }
+
+    if (game.invitations) {
+        response.status(401).send({ message: 'This game has pending invitations' });
+        return;
     }
 
     if (game.completed) {

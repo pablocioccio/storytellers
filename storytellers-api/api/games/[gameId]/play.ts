@@ -1,6 +1,7 @@
 import { NowRequest, NowResponse } from '@vercel/node';
 import authenticator = require('../../../lib/authenticator');
 import * as dbManager from '../../../lib/database';
+import * as emailManager from '../../../lib/email';
 import * as notificationManager from '../../../lib/notification';
 import { IGame } from '../../../model/game';
 import { IPlayer } from '../../../model/player';
@@ -73,11 +74,25 @@ export default async (request: NowRequest, response: NowResponse) => {
         updates[`/games/${gameId}/firstWords`] = null;
         updates[`/games/${gameId}/completed`] = true;
 
-        // Update database information first
-        await database.ref().update(updates);
-
-        // Send push notifications to all players
-        await notificationManager.sendGameEndNotifications(game);
+        try {
+            // Update database and send email and push notifications to all players
+            await Promise.all([
+                database.ref().update(updates),
+                notificationManager.sendGameEndNotifications(game),
+                ...game.players.map((player: IPlayer) => {
+                    return emailManager.sendEmail(
+                        player.email,
+                        `${game.title.toUpperCase()} is finished!`,
+                        `Hi ${player.name}! The game "${game.title}" has just finished.\n\n` +
+                        `Follow this link to see how you and your friends fared: ${process.env.frontend_url}/games/${gameId}.`,
+                    );
+                }),
+            ]);
+        } catch (error) {
+            console.error(error);
+            response.status(500).json({ error });
+            return;
+        }
 
     } else {
         const nextPlayer: IPlayer = game.players[(game.currentPhraseNumber + 1) % game.players.length];
@@ -85,11 +100,24 @@ export default async (request: NowRequest, response: NowResponse) => {
         updates[`/games/${gameId}/currentPhraseNumber`] = game.currentPhraseNumber + 1;
         updates[`/games/${gameId}/firstWords`] = request.body.lastWords;
 
-        // Update database information first
-        await database.ref().update(updates);
+        try {
+            // Update database and send email and push notification to the next player
+            await Promise.all([
+                database.ref().update(updates),
+                notificationManager.sendNextTurnNotifications(nextPlayer, game),
+                emailManager.sendEmail(
+                    nextPlayer.email,
+                    `It's your turn in ${game.title.toUpperCase()}`,
+                    `Hi ${nextPlayer.name}. You are up next in "${game.title}".\n\n` +
+                    `Follow this link to play: ${process.env.frontend_url}/games/${gameId}/play.`,
+                ),
+            ]);
+        } catch (error) {
+            console.error(error);
+            response.status(500).json({ error });
+            return;
+        }
 
-        // Send push notifications to the next player
-        await notificationManager.sendNextTurnNotifications(nextPlayer, game);
     }
 
     response.status(200).send({});

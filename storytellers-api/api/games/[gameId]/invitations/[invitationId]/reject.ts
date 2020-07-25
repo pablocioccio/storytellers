@@ -1,6 +1,7 @@
 import { NowRequest, NowResponse } from '@vercel/node';
 import authenticator = require('../../../../../lib/authenticator');
 import * as dbManager from '../../../../../lib/database';
+import * as emailManager from '../../../../../lib/email';
 import { IGame } from '../../../../../model/game';
 import { IPlayer } from '../../../../../model/player';
 
@@ -62,11 +63,18 @@ export default async (request: NowRequest, response: NowResponse) => {
                 if (!game.invitations) {
                     // Create an object to update multiple elements at once
                     const updates: { [key: string]: any } = {};
+                    // Prepare en email for the creator
+                    let email: { recipient: string, subject: string, message: string };
                     if (game.players.length === 1) {
                         // The only player left is the creator, so the game will be deleted
                         updates[`/games/${gameId}`] = null;
                         updates[`/user-games/${game.players[0].user_id}/${gameId}`] = null;
-                        // TODO: Notify the creator that the game was deleted
+                        email = {
+                            message: `The last invitation to "${game.title}" was rejected, ` +
+                                `and since you are the only player left, the game will be deleted.`,
+                            recipient: game.players[0].email,
+                            subject: `All invitations to ${game.title.toUpperCase()} were rejected`,
+                        };
                     } else {
                         // The game is ready to start, so we initialize the game data
                         const gameData: { [key: number]: { phrase: string, lastWords: string } } = {};
@@ -77,10 +85,19 @@ export default async (request: NowRequest, response: NowResponse) => {
                             };
                         }
                         updates[`/game-data/${gameId}`] = gameData;
+                        email = {
+                            message: `The last invitation to "${game.title}" was rejected, and the game is ready to start.\n\n` +
+                                `Follow this link to play: ${process.env.frontend_url}/games/${gameId}/play.`,
+                            recipient: game.players[0].email,
+                            subject: `${game.title.toUpperCase()} is ready to start!`,
+                        };
                     }
-                    // Perform the update
                     try {
-                        await database.ref().update(updates);
+                        // Perform the update and send an email to the creator
+                        await Promise.all([
+                            database.ref().update(updates),
+                            emailManager.sendEmail(email.recipient, email.subject, email.message),
+                        ]);
                     } catch (error) {
                         console.error(
                             `Invitation ${invitationId} for game ${gameId} was rejected. However, the game could ` +

@@ -1,6 +1,8 @@
 import { NowRequest, NowResponse } from '@vercel/node';
 import authenticator = require('../../../../../lib/authenticator');
 import * as dbManager from '../../../../../lib/database';
+import * as emailManager from '../../../../../lib/email';
+import * as notificationManager from '../../../../../lib/notification';
 import { IGame } from '../../../../../model/game';
 import { IPlayer } from '../../../../../model/player';
 
@@ -64,6 +66,8 @@ export default async (request: NowRequest, response: NowResponse) => {
                 const updates: { [key: string]: any } = {
                     [`/user-games/${user.user_id}/${gameId}`]: { timestamp: new Date() },
                 };
+                // Prepare an email in case the game starts
+                let email: { recipient: string, subject: string, message: string } | null = null;
                 // If it was the last invitation, then initialize game data
                 if (!game.invitations) {
                     const gameData: { [key: number]: { phrase: string, lastWords: string } } = {};
@@ -74,10 +78,28 @@ export default async (request: NowRequest, response: NowResponse) => {
                         };
                     }
                     updates[`/game-data/${gameId}`] = gameData;
+                    email = {
+                        message: `Hi ${game.players[0].name}. You are up next in "${game.title}".\n\n` +
+                            `Follow this link to play: ${process.env.frontend_url}/games/${gameId}/play.`,
+                        recipient: game.players[0].email,
+                        subject: `It's your turn in ${game.title.toUpperCase()}`,
+                    };
                 }
-                // Perform the update
+
                 try {
-                    await database.ref().update(updates);
+                    // Perform the database update
+                    const promises = [database.ref().update(updates)];
+                    if (email) {
+                        // Send email and push notification to the creator
+                        promises.push(notificationManager.sendNextTurnNotifications(game.players[0], game));
+                        promises.push(emailManager.sendEmail(
+                            game.players[0].email,
+                            `It's your turn in ${game.title.toUpperCase()}`,
+                            `Hi ${game.players[0].name}. You are up next in "${game.title}".\n\n` +
+                            `Follow this link to play: ${process.env.frontend_url}/games/${gameId}/play.`,
+                        ));
+                    }
+                    await Promise.all(promises);
                 } catch (error) {
                     console.error(
                         `Invitation ${invitationId} for game ${gameId} was accepted, but the there ` +
@@ -86,6 +108,7 @@ export default async (request: NowRequest, response: NowResponse) => {
                     response.status(500).send({ message: 'There was an error accepting the invitation.' });
                     return;
                 }
+
                 // Return a successful response
                 console.log(`Invitation ${invitationId} for game ${gameId} accepted succesfully. Current user: ${JSON.stringify(user)}.`);
                 response.status(200).send({});

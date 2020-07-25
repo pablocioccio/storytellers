@@ -86,14 +86,16 @@ export default async (request: NowRequest, response: NowResponse) => {
     };
 
     try {
-        // Send invitations
-        const subject = `${creator.name} invited you to Storytellers!`;
+        // Send invitations and update database
         await Promise.all([
             database.ref().update(updates),
             ...Object.entries(invitations).map(([invitationKey, invitation]) => {
-                const body = `Hi! ${creator.name} wants you to be part of "${game.title}".\n\n` +
-                    `Follow this link to see your invitation: http://localhost:4200/games/${newGameKey}/invitation/${invitationKey}`;
-                return emailManager.sendEmail(invitation.email, subject, body);
+                return emailManager.sendEmail(
+                    invitation.email,
+                    `${creator.name} invited you to Storytellers!`,
+                    `Hi! ${creator.name} wants you to be part of "${game.title}".\n\n` +
+                    `Follow this link to see your invitation: ${process.env.frontend_url}/games/${newGameKey}/invitation/${invitationKey}`,
+                );
             }),
         ]);
     } catch (error) {

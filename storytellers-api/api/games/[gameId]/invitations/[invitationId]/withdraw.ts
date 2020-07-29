@@ -36,8 +36,10 @@ export default async (request: NowRequest, response: NowResponse) => {
         return;
     }
 
-    if (!emailManager.equals(invitation.email, user.email)) {
-        response.status(401).send({ message: `Invitation was sent to ${invitation.email}, but the user email is ${user.email}.` });
+    // Retrieve game from the database
+    const creatorId = await database.ref(`/games/${gameId}/creatorId`).once('value');
+    if (creatorId.val() !== user.user_id) {
+        response.status(401).send({ message: 'Only the creator of the game is allowed to withdraw invitations.' });
         return;
     }
 
@@ -49,12 +51,12 @@ export default async (request: NowRequest, response: NowResponse) => {
         return game;
     }, async (error, committed, snapshot) => {
         if (error) {
-            console.error(`There was an error rejecting invitation ${invitationId} for game ${gameId}. Current user: ${JSON.stringify(user)}.`, error);
-            response.status(500).send({ message: 'There was an error rejecting the invitation.' });
+            console.error(`There was an error withdrawing invitation ${invitationId} for game ${gameId}. Creator: ${JSON.stringify(user)}.`, error);
+            response.status(500).send({ message: 'There was an error withdrawing the invitation.' });
             return;
         } else if (!committed) {
-            console.error(`Invitation ${invitationId} for game ${gameId} could not be rejected. Current user: ${JSON.stringify(user)}.`);
-            response.status(500).send({ message: 'There was an error rejecting the invitation.' });
+            console.error(`Invitation ${invitationId} for game ${gameId} could not be withdrawn. Creator: ${JSON.stringify(user)}.`);
+            response.status(500).send({ message: 'There was an error withdrawing the invitation.' });
             return;
         } else {
             if (snapshot) {
@@ -72,10 +74,10 @@ export default async (request: NowRequest, response: NowResponse) => {
                         updates[`/games/${gameId}`] = null;
                         updates[`/user-games/${game.players[0].user_id}/${gameId}`] = null;
                         email = {
-                            message: `The last invitation to "${game.title}" was rejected, ` +
+                            message: `You have withdrawn the last invitation to "${game.title}", ` +
                                 `and since you are the only player left, the game will be deleted.`,
                             recipient: game.players[0].email,
-                            subject: `All invitations to ${game.title.toUpperCase()} were rejected`,
+                            subject: `${game.title.toUpperCase()} will be deleted`,
                         };
                     } else {
                         // The game is ready to start, so we initialize the game data
@@ -89,7 +91,7 @@ export default async (request: NowRequest, response: NowResponse) => {
                         }
                         updates[`/game-data/${gameId}`] = gameData;
                         email = {
-                            message: `The last invitation to "${game.title}" was rejected, and the game is ready to start.\n\n` +
+                            message: `The last invitation to "${game.title}" was withdrawn, and the game is ready to start.\n\n` +
                                 `Follow this link to play: ${process.env.frontend_url}/games/${gameId}/play.`,
                             recipient: game.players[0].email,
                             subject: `${game.title.toUpperCase()} is ready to start!`,
@@ -108,23 +110,23 @@ export default async (request: NowRequest, response: NowResponse) => {
                         await Promise.all(promises);
                     } catch (error) {
                         console.error(
-                            `Invitation ${invitationId} for game ${gameId} was rejected. However, the game could ` +
-                            `not be properly initialized/removed. Current user: ${JSON.stringify(user)}.`,
+                            `Invitation ${invitationId} for game ${gameId} was withdrawn. However, the game could ` +
+                            `not be properly initialized/removed. Creator: ${JSON.stringify(user)}.`,
                         );
-                        response.status(500).send({ message: 'There was an error rejecting the invitation.' });
+                        response.status(500).send({ message: 'There was an error withdrawing the invitation.' });
                         return;
                     }
                 }
                 // Return a successful response
-                console.log(`Invitation ${invitationId} for game ${gameId} rejected succesfully. Current user: ${JSON.stringify(user)}.`);
+                console.log(`Invitation ${invitationId} for game ${gameId} withdrawn succesfully. Creator: ${JSON.stringify(user)}.`);
                 response.status(200).send({});
                 return;
             } else {
                 console.error(
-                    `Invitation ${invitationId} for game ${gameId} was rejected, but the game state could not be retrieved.` +
-                    `That means that the game might not be properly initialized. Current user: ${JSON.stringify(user)}`,
+                    `Invitation ${invitationId} for game ${gameId} was withdrawn, but the game state could not be retrieved.` +
+                    `That means that the game might not be properly initialized. Creator: ${JSON.stringify(user)}`,
                 );
-                response.status(500).send({ message: 'There was an error rejecting the invitation.' });
+                response.status(500).send({ message: 'There was an error withdrawing the invitation.' });
                 return;
             }
         }

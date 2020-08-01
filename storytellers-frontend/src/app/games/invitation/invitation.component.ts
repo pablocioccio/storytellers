@@ -80,7 +80,7 @@ export class InvitationComponent implements OnInit, OnDestroy {
       this.gameService.rejectInvitation(this.game.id, this.invitationId).subscribe(() => {
         this.router.navigate(['/games/dashboard']);
       }, (error) => {
-        this.errorMessage = error.message ? error.message : 'There was problem rejecting the invitation';
+        this.errorMessage = error.message ? error.message : 'There was a problem rejecting the invitation';
         setTimeout(() => this.errorMessage = null, 5000);
         this.responseStatus = null;
       })

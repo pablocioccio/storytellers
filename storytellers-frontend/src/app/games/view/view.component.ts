@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit, Renderer2 } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { AuthenticationService } from 'src/app/authentication/authentication.service';
@@ -17,31 +17,34 @@ export class ViewComponent implements OnInit, OnDestroy {
 
   game: Game;
   errorMessage: string;
-  gameSubscription: Subscription;
+  subscription: Subscription = new Subscription();
+  invitationWithdrawn: string[] = [];
 
   constructor(
     private route: ActivatedRoute, public auth: AuthenticationService, private renderer: Renderer2,
-    private gameService: GameService, private spinnerService: SpinnerService) { }
+    private router: Router, private gameService: GameService, private spinnerService: SpinnerService) { }
 
   ngOnInit() {
-    this.gameSubscription = this.route.paramMap.pipe(
-      switchMap(params => {
-        // Show spinner
-        this.spinnerService.show();
-        // Clear the existing game (if any)
-        this.game = undefined;
-        // Clear the error message (if any)
-        this.errorMessage = undefined;
-        // Retrieve the game that was passed by id
-        return this.gameService.getGame(params.get('id'));
+    this.subscription.add(
+      this.route.paramMap.pipe(
+        switchMap(params => {
+          // Show spinner
+          this.spinnerService.show();
+          // Clear the existing game (if any)
+          this.game = undefined;
+          // Clear the error message (if any)
+          this.errorMessage = undefined;
+          // Retrieve the game that was passed by id
+          return this.gameService.getGame(params.get('id'));
+        })
+      ).subscribe((game: Game) => {
+        this.game = game;
+        this.spinnerService.hide();
+      }, (error) => {
+        this.spinnerService.hide();
+        this.errorMessage = error.message ? error.message : 'There was a problem retrieving the game';
       })
-    ).subscribe((game: Game) => {
-      this.game = game;
-      this.spinnerService.hide();
-    }, (error) => {
-      this.spinnerService.hide();
-      this.errorMessage = error.message ? error.message : 'There was a problem retrieving the game';
-    });
+    );
   }
 
   getUserInfo(userId: string, users: User[]): User {
@@ -87,8 +90,28 @@ export class ViewComponent implements OnInit, OnDestroy {
     });
   }
 
+  withdrawInvitation(invitationId: string) {
+    this.invitationWithdrawn.push(invitationId);
+    this.subscription.add(
+      this.gameService.withdrawInvitation(this.game.id, invitationId).subscribe(() => {
+        delete this.game.invitations[invitationId];
+        if (!Object.keys(this.game.invitations).length) {
+          if (this.game.players.length > 1) {
+            this.router.navigate([`/games/${this.game.id}/play`]);
+          } else {
+            this.router.navigate(['/games/dashboard']);
+          }
+        }
+      }, (error) => {
+        this.invitationWithdrawn.splice(this.invitationWithdrawn.indexOf(invitationId), 1);
+        this.errorMessage = error.message ? error.message : `There was a problem withdrawing the invitation`;
+        setTimeout(() => this.errorMessage = null, 5000);
+      })
+    );
+  }
+
   ngOnDestroy() {
-    this.gameSubscription.unsubscribe();
+    this.subscription.unsubscribe();
   }
 
 }

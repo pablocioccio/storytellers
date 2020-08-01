@@ -70,12 +70,13 @@
     <table class="table mt-2 border">
       <thead>
         <tr class="bg-dark text-white">
-          <th colspan="3" class="text-center">Pending invitations</th>
+          <th colspan="4" class="text-center">Pending invitations</th>
         </tr>
         <tr class="table-info">
           <th>#</th>
           <th>Avatar</th>
           <th>Email</th>
+          <th></th>
         </tr>
       </thead>
       <tbody>
@@ -85,6 +86,20 @@
             <img src="assets/images/profile.svg" class="rounded-circle" width="40px;">
           </td>
           <td>{{invitation.value.email}}</td>
+          <td>
+            <ng-container *ngIf="game.creatorId === (auth.userProfile$ | async).sub">
+              <button type="button" class="close" aria-label="Close"
+                *ngIf="!invitationWithdrawn.includes(invitation.key)" role="status"
+                (click)="withdrawInvitation(invitation.key)">
+                <span aria-hidden="true" class="text-danger">&times;</span>
+              </button>
+              <div class="clearfix mt-2" *ngIf="invitationWithdrawn.includes(invitation.key)">
+                <div class="spinner-border spinner-border-sm float-right text-danger" role="status">
+                  <span class="sr-only">Processing...</span>
+                </div>
+              </div>
+            </ng-container>
+          </td>
         </tr>
       </tbody>
     </table>

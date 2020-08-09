@@ -10,6 +10,10 @@
         "firebase_private_key": "@firebase_private_key",
         "firebase_project_id": "@firebase_project_id",
         "firebase_database_url": "@firebase_database_url",
+        "pusher_app_id": "@pusher_app_id",
+        "pusher_app_secret": "@pusher_app_secret",
+        "pusher_app_key": "1bc814e9f0eaaa4a21e3",
+        "pusher_app_cluster": "us3",
         "user_notifications_vapid_public_key": "@user_notifications_vapid_public_key",
         "user_notifications_vapid_private_key": "@user_notifications_vapid_private_key"
     }

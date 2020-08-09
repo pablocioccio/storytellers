@@ -3,6 +3,7 @@ import authenticator = require('../../../../../lib/authenticator');
 import * as dbManager from '../../../../../lib/database';
 import * as emailManager from '../../../../../lib/email';
 import * as notificationManager from '../../../../../lib/notification';
+import * as pusher from '../../../../../lib/pusher';
 import { IGame } from '../../../../../model/game';
 import { IPlayer } from '../../../../../model/player';
 
@@ -87,10 +88,15 @@ export default async (request: NowRequest, response: NowResponse) => {
                 }
 
                 try {
-                    // Perform the database update
-                    const promises = [database.ref().update(updates)];
+                    // Perform the database update and send pusher notifications to the players
+                    const promises = [
+                        database.ref().update(updates),
+                        ...game.players.map((player: IPlayer) => {
+                            return pusher.sendMessage(player.user_id, gameId as string, pusher.Event.GameUpdated);
+                        }),
+                    ];
                     if (email) {
-                        // Send email and push notification to the creator
+                        // Send email and web push notification to the creator
                         promises.push(notificationManager.sendNextTurnNotifications(game.players[0], game));
                         promises.push(emailManager.sendEmail(
                             game.players[0].email,

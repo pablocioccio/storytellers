@@ -3,6 +3,7 @@ import authenticator = require('../../../../../lib/authenticator');
 import * as dbManager from '../../../../../lib/database';
 import * as emailManager from '../../../../../lib/email';
 import * as notificationManager from '../../../../../lib/notification';
+import * as pusher from '../../../../../lib/pusher';
 import { IGame } from '../../../../../model/game';
 import { IPlayer } from '../../../../../model/player';
 
@@ -62,6 +63,8 @@ export default async (request: NowRequest, response: NowResponse) => {
             if (snapshot) {
                 // Retrieve game state after the update operation
                 const game = snapshot.val() as IGame;
+                // Pusher event that will be sent to the players
+                let pusherEvent = pusher.Event.GameUpdated;
                 // Was it the last invitation?
                 if (!game.invitations) {
                     // Create an object to update multiple elements at once
@@ -71,6 +74,7 @@ export default async (request: NowRequest, response: NowResponse) => {
                     let readyToStart = false;
                     if (game.players.length === 1) {
                         // The only player left is the creator, so the game will be deleted
+                        pusherEvent = pusher.Event.GameDeleted;
                         updates[`/games/${gameId}`] = null;
                         updates[`/user-games/${game.players[0].user_id}/${gameId}`] = null;
                         email = {
@@ -117,6 +121,10 @@ export default async (request: NowRequest, response: NowResponse) => {
                         return;
                     }
                 }
+                // Send pusher events to all players
+                await Promise.all([...game.players.map((player: IPlayer) => {
+                    return pusher.sendMessage(player.user_id, gameId as string, pusherEvent);
+                })]);
                 // Return a successful response
                 console.log(`Invitation ${invitationId} for game ${gameId} withdrawn succesfully. Creator: ${JSON.stringify(user)}.`);
                 response.status(200).send({});

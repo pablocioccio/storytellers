@@ -71,7 +71,7 @@ export class DashboardComponent implements OnInit {
         to the current user. If it's not, then notify the server. */
         const currentNotificationJSON: PushSubscriptionJSON = currentNotification.toJSON();
         this.listNotificationsRequestSubscription = this.userService
-          .listNotificationsSubscriptions()
+          .listPushNotificationsSubscriptions()
           .subscribe(notifications => {
             const match = notifications.find(notification =>
               notifications.keys &&
@@ -80,7 +80,7 @@ export class DashboardComponent implements OnInit {
               notification.keys.p256dh === currentNotificationJSON.keys.p256dh);
             // If none of the stored subscriptions match, then store this one.
             if (!match) {
-              this.newNotificationRequestSubscription = this.userService.subscribeToNotifications(currentNotification).subscribe();
+              this.newNotificationRequestSubscription = this.userService.subscribeToPushNotifications(currentNotification).subscribe();
             }
           });
       }
@@ -91,7 +91,7 @@ export class DashboardComponent implements OnInit {
     this.swPush.requestSubscription({
       serverPublicKey: VAPID_PUBLIC,
     }).then(subscription => {
-      this.newNotificationRequestSubscription = this.userService.subscribeToNotifications(subscription).subscribe();
+      this.newNotificationRequestSubscription = this.userService.subscribeToPushNotifications(subscription).subscribe();
     }).catch(console.error);
   }
 

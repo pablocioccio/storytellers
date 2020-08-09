@@ -1,10 +1,12 @@
 import { Component, OnDestroy, OnInit, Renderer2 } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { ActivatedRoute, ParamMap, Router } from '@angular/router';
+import { Channel } from 'pusher-js';
+import { combineLatest, Observable, Subscription } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { AuthenticationService } from 'src/app/authentication/authentication.service';
 import { SpinnerService } from 'src/app/spinner/spinner.service';
 import { User } from 'src/app/users/model/user';
+import { UserService } from 'src/app/users/user.service';
 import { GameService } from '../game.service';
 import { Game } from '../model/game';
 
@@ -17,34 +19,75 @@ export class ViewComponent implements OnInit, OnDestroy {
 
   game: Game;
   errorMessage: string;
-  subscription: Subscription = new Subscription();
+  pusherChannel: Channel;
   invitationWithdrawn: string[] = [];
+  subscription: Subscription = new Subscription();
 
   constructor(
-    private route: ActivatedRoute, public auth: AuthenticationService, private renderer: Renderer2,
-    private router: Router, private gameService: GameService, private spinnerService: SpinnerService) { }
+    private route: ActivatedRoute, public auth: AuthenticationService, private spinnerService: SpinnerService,
+    private renderer: Renderer2, private router: Router, private gameService: GameService, private userService: UserService) { }
 
   ngOnInit() {
-    this.subscription.add(
-      this.route.paramMap.pipe(
-        switchMap(params => {
-          // Show spinner
-          this.spinnerService.show();
-          // Clear the existing game (if any)
-          this.game = undefined;
-          // Clear the error message (if any)
-          this.errorMessage = undefined;
-          // Retrieve the game that was passed by id
-          return this.gameService.getGame(params.get('id'));
-        })
-      ).subscribe((game: Game) => {
-        this.game = game;
-        this.spinnerService.hide();
-      }, (error) => {
-        this.spinnerService.hide();
-        this.errorMessage = error.message ? error.message : 'There was a problem retrieving the game';
+    /* The combineLatest() operator combines multiple observables into a single one. Every time one of the inner observables
+     * emits a value, the combined observable will emit the latest value emitted by each of the inner observables.
+     * It will only start emitting values once all of the inner observables have emitted at least once. */
+    const userAndParams$: Observable<[any, ParamMap]> = combineLatest([this.auth.userProfile$, this.route.paramMap]);
+    /* Retrieve the game and subscribe to events every time the userId or the gameId param changes */
+    const game$ = userAndParams$.pipe(
+      switchMap(values => {
+        const userId: string = values[0].sub.replace('|', ''); // Pipes are not supported in pusher channel names
+        const gameId: string = values[1].get('id');
+        // Remove handlers from existing pusher channel (if any)
+        if (this.pusherChannel) { this.pusherChannel.unbind(); }
+        // Subscribe to a pusher channel for this specific user
+        this.pusherChannel = this.userService.getPusherInstance().subscribe(userId);
+        // Listen to events for this specific game
+        this.subscribeToGameEvents(gameId);
+        // Get and return the game observable
+        return this.getGame(gameId);
       })
     );
+    // Subscribe to game response and store the subscription
+    this.subscription.add(this.subscribeToGameResponse(game$));
+  }
+
+  getGame(gameId: string): Observable<Game> {
+    // Show spinner
+    this.spinnerService.show();
+    // Clear the existing game (if any)
+    this.game = undefined;
+    // Clear the error message (if any)
+    this.errorMessage = undefined;
+    // Retrieve the game that was passed by id
+    return this.gameService.getGame(gameId);
+  }
+
+  subscribeToGameResponse(game$: Observable<Game>): Subscription {
+    return game$.subscribe((game: Game) => {
+      this.game = game;
+      this.spinnerService.hide();
+    }, (error) => {
+      this.spinnerService.hide();
+      this.errorMessage = error.message ? error.message : 'There was a problem retrieving the game';
+    });
+  }
+
+  subscribeToGameEvents(gameId: string) {
+    this.pusherChannel.bind(gameId, (eventData: 'GAME_UPDATED' | 'GAME_DELETED') => {
+      switch (eventData) {
+        case 'GAME_UPDATED':
+          const game$ = this.getGame(gameId);
+          const sub = this.subscribeToGameResponse(game$);
+          this.subscription.add(sub);
+          break;
+        case 'GAME_DELETED':
+          this.router.navigate(['/games/dashboard']);
+          break;
+        default:
+          console.log(`Unknown pusher event: ${eventData}`);
+          break;
+      }
+    });
   }
 
   getUserInfo(userId: string, users: User[]): User {
@@ -112,6 +155,7 @@ export class ViewComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.subscription.unsubscribe();
+    if (this.pusherChannel) { this.pusherChannel.unbind(); }
   }
 
 }

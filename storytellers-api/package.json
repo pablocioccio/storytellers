@@ -9,7 +9,7 @@
   "author": "Pablo N. Cioccio",
   "license": "ISC",
   "dependencies": {
-    "@firebase/app": "^0.4.20",
+    "@firebase/app": "^0.6.9",
     "@types/nodemailer": "^6.4.0",
     "auth0": "^2.20.0",
     "email-validator": "^2.0.4",

@@ -119,10 +119,29 @@ export default async (request: NowRequest, response: NowResponse) => {
                         return;
                     }
                 }
-                // Send pusher events to all players
-                await Promise.all([...game.players.map((player: IPlayer) => {
-                    return pusher.sendMessage(player.user_id, gameId as string, pusherEvent);
-                })]);
+
+                try {
+                    // Send pusher events to all players
+                    const pusherPromises = [
+                        ...game.players.map((player: IPlayer) =>
+                            pusher.sendMessageByPlayerId(player.user_id, gameId as string, pusherEvent),
+                        ),
+                    ];
+                    if (game.invitations) {
+                        pusherPromises.push(
+                            ...Object.values(game.invitations).map((value: { email: string }) =>
+                                pusher.sendMessageByEmail(value.email, gameId as string, pusherEvent),
+                            ),
+                        );
+                    }
+                    await Promise.all(pusherPromises);
+                } catch (error) {
+                    console.error(
+                        `Invitation ${invitationId} for game ${gameId} was rejected, but pusher notifications ` +
+                        `to all players could not be sent. Current user: ${JSON.stringify(user)}.`, error,
+                    );
+                }
+
                 // Return a successful response
                 console.log(`Invitation ${invitationId} for game ${gameId} rejected succesfully. Current user: ${JSON.stringify(user)}.`);
                 response.status(200).send({});

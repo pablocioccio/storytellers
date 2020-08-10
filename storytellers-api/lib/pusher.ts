@@ -1,4 +1,19 @@
-export function sendMessage(playerId: string, gameId: string, message: Event): Promise<void> {
+export function sendMessageByPlayerId(playerId: string, gameId: string, message: Event): Promise<void> {
+    /* Use the playerId as the channel name, and the gameId as the event name */
+    return sendMessage(playerId.replace('|', ''), gameId, message);
+}
+
+export function sendMessageByEmail(email: string, gameId: string, message: Event): Promise<void> {
+    /* Use the email as the channel name, and the gameId as the event name */
+    return sendMessage(email, gameId, message);
+}
+
+export enum Event {
+    GameUpdated = 'GAME_UPDATED',
+    GameDeleted = 'GAME_DELETED',
+}
+
+function sendMessage(channelName: string, eventName: string, message: Event): Promise<void> {
     const Pusher = require('pusher');
     /* Modify prototype to add support for async trigger */
     Pusher.prototype.triggerAsync = async function(
@@ -27,11 +42,5 @@ export function sendMessage(playerId: string, gameId: string, message: Event): P
         secret,
     });
 
-    /* Use the playerId as the channel name, and the gameId as the event name */
-    return pusher.triggerAsync(playerId.replace('|', ''), gameId, message);
-}
-
-export enum Event {
-    GameUpdated = 'GAME_UPDATED',
-    GameDeleted = 'GAME_DELETED',
+    return pusher.triggerAsync(channelName, eventName, message);
 }

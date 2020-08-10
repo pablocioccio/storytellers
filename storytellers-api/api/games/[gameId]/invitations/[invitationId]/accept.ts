@@ -88,13 +88,24 @@ export default async (request: NowRequest, response: NowResponse) => {
                 }
 
                 try {
-                    // Perform the database update and send pusher notifications to the players
+                    // Perform the database update and send pusher notifications to the players (except the current one)
                     const promises = [
                         database.ref().update(updates),
-                        ...game.players.map((player: IPlayer) => {
-                            return pusher.sendMessage(player.user_id, gameId as string, pusher.Event.GameUpdated);
-                        }),
+                        ...game.players
+                            .filter((player: IPlayer) => player.user_id !== user.user_id)
+                            .map((player: IPlayer) =>
+                                pusher.sendMessageByPlayerId(
+                                    player.user_id, gameId as string, pusher.Event.GameUpdated,
+                                ),
+                            ),
                     ];
+                    if (game.invitations) {
+                        promises.push(
+                            ...Object.values(game.invitations).map((value: { email: string }) =>
+                                pusher.sendMessageByEmail(value.email, gameId as string, pusher.Event.GameUpdated),
+                            ),
+                        );
+                    }
                     if (email) {
                         // Send email and web push notification to the creator
                         promises.push(notificationManager.sendNextTurnNotifications(game.players[0], game));

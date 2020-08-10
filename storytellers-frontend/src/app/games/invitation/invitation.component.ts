@@ -41,8 +41,11 @@ export class InvitationComponent implements OnInit, OnDestroy {
         const gameId: string = values[1].get('gameId');
         // Set the invitation id
         this.invitationId = values[1].get('invitationId');
-        // Remove handlers from existing pusher channel (if any)
-        if (this.pusherChannel) { this.pusherChannel.unbind(); }
+        // Remove handlers from existing pusher channel (if any) and unsubscribe
+        if (this.pusherChannel) {
+          this.pusherChannel.unbind();
+          this.pusherChannel.unsubscribe();
+        }
         // Subscribe to a pusher channel for this specific email address
         this.pusherChannel = this.userService.getPusherInstance().subscribe(email);
         // Listen to events for this specific game
@@ -131,7 +134,10 @@ export class InvitationComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.subscription.unsubscribe();
-    if (this.pusherChannel) { this.pusherChannel.unbind(); }
+    if (this.pusherChannel) {
+      this.pusherChannel.unbind();
+      this.pusherChannel.unsubscribe();
+    }
   }
 
 }

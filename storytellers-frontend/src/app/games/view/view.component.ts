@@ -37,8 +37,11 @@ export class ViewComponent implements OnInit, OnDestroy {
       switchMap(values => {
         const userId: string = values[0].sub.replace('|', ''); // Pipes are not supported in pusher channel names
         const gameId: string = values[1].get('id');
-        // Remove handlers from existing pusher channel (if any)
-        if (this.pusherChannel) { this.pusherChannel.unbind(); }
+        // Remove handlers from existing pusher channel (if any) and unsubscribe
+        if (this.pusherChannel) {
+          this.pusherChannel.unbind();
+          this.pusherChannel.unsubscribe();
+        }
         // Subscribe to a pusher channel for this specific user
         this.pusherChannel = this.userService.getPusherInstance().subscribe(userId);
         // Listen to events for this specific game
@@ -155,7 +158,10 @@ export class ViewComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.subscription.unsubscribe();
-    if (this.pusherChannel) { this.pusherChannel.unbind(); }
+    if (this.pusherChannel) {
+      this.pusherChannel.unbind();
+      this.pusherChannel.unsubscribe();
+    }
   }
 
 }

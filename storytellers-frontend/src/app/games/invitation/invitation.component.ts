@@ -92,9 +92,11 @@ export class InvitationComponent implements OnInit, OnDestroy {
     this.pusherChannel.bind(gameId, (eventData: 'GAME_UPDATED' | 'GAME_DELETED') => {
       switch (eventData) {
         case 'GAME_UPDATED':
-          const game$ = this.getGame(gameId);
-          const sub = this.subscribeToGameResponse(game$);
-          this.subscription.add(sub);
+          this.subscription.add(this.gameService.getGame(gameId).subscribe((game: Game) => {
+            this.game = game;
+          }, (error) => {
+            this.errorMessage = error.message ? error.message : 'There was a problem updating the game state';
+          }));
           break;
         case 'GAME_DELETED':
           this.router.navigate(['/games/dashboard']);

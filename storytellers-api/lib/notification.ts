@@ -65,11 +65,19 @@ export async function sendNextTurnNotifications(player: IPlayer, game: IGame) {
     }
 }
 
-export async function sendGameEndNotifications(game: IGame) {
+/**
+ * Send webpush notifications to all players except the current one,
+ * as they already know the game is finished.
+ * @param game
+ * @param currentPlayerId
+ */
+export async function sendGameEndNotifications(game: IGame, currentPlayerId: string) {
     const db = dbManager.getDatabase();
-    const subscriptionsSnapshotsPromises: Array<Promise<database.DataSnapshot>> = game.players.map(
-        (player: IPlayer) => db.ref(`/user-notifications/${player.user_id}`).once('value'),
-    );
+    const subscriptionsSnapshotsPromises: Array<Promise<database.DataSnapshot>> = game.players
+        .filter((player: IPlayer) => player.user_id !== currentPlayerId)
+        .map(
+            (player: IPlayer) => db.ref(`/user-notifications/${player.user_id}`).once('value'),
+        );
 
     // Retrieve all references to the database in parallel
     const subscriptionsSnapshots = await Promise.all(subscriptionsSnapshotsPromises);
@@ -79,6 +87,7 @@ export async function sendGameEndNotifications(game: IGame) {
 
     for (let i = 0; i < game.players.length; i++) {
         const player = game.players[i];
+        if (player.user_id === currentPlayerId) { continue; }
         const subscriptions: { [key: string]: PushSubscription } = subscriptionsSnapshots[i].val();
         if (!subscriptions) { continue; }
 

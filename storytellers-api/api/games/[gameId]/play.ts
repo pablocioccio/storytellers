@@ -3,6 +3,7 @@ import authenticator = require('../../../lib/authenticator');
 import * as dbManager from '../../../lib/database';
 import * as emailManager from '../../../lib/email';
 import * as notificationManager from '../../../lib/notification';
+import * as pusher from '../../../lib/pusher';
 import { IGame } from '../../../model/game';
 import { IPlayer } from '../../../model/player';
 
@@ -78,18 +79,30 @@ export default async (request: NowRequest, response: NowResponse) => {
         updates[`/games/${gameId}/completed`] = true;
 
         try {
-            // Update database and send email and push notifications to all players
             await Promise.all([
+                // Update database
                 database.ref().update(updates),
-                notificationManager.sendGameEndNotifications(game),
-                ...game.players.map((player: IPlayer) => {
-                    return emailManager.sendEmail(
-                        player.email,
-                        `${game.title.toUpperCase()} is finished!`,
-                        `Hi ${player.name}! The game "${game.title}" has just finished.\n\n` +
-                        `Follow this link to see how you and your friends fared: ${process.env.frontend_url}/games/${gameId}.`,
-                    );
-                }),
+                // Send web push notifications to all players (except the current one)
+                notificationManager.sendGameEndNotifications(game, user.user_id),
+                // Send an email to all players (except the current one)
+                ...game.players
+                    .filter((player: IPlayer) => player.user_id !== user.user_id)
+                    .map((player: IPlayer) =>
+                        emailManager.sendEmail(
+                            player.email,
+                            `${game.title.toUpperCase()} is finished!`,
+                            `Hi ${player.name}! The game "${game.title}" has just finished.\n\n` +
+                            `Follow this link to see how you and your friends fared: ${process.env.frontend_url}/games/${gameId}.`,
+                        ),
+                    ),
+                // Send pusher events to all players (except the current one)
+                ...game.players
+                    .filter((player: IPlayer) => player.user_id !== user.user_id)
+                    .map((player: IPlayer) =>
+                        pusher.sendMessageByPlayerId(
+                            player.user_id, gameId as string, pusher.Event.GameUpdated,
+                        ),
+                    ),
             ]);
         } catch (error) {
             console.error(error);
@@ -104,16 +117,26 @@ export default async (request: NowRequest, response: NowResponse) => {
         updates[`/games/${gameId}/firstWords`] = request.body.lastWords;
 
         try {
-            // Update database and send email and push notification to the next player
             await Promise.all([
+                // Update database
                 database.ref().update(updates),
+                // Send web push notification to the next player
                 notificationManager.sendNextTurnNotifications(nextPlayer, game),
+                // Send an email to the next player
                 emailManager.sendEmail(
                     nextPlayer.email,
                     `It's your turn in ${game.title.toUpperCase()}`,
                     `Hi ${nextPlayer.name}. You are up next in "${game.title}".\n\n` +
                     `Follow this link to play: ${process.env.frontend_url}/games/${gameId}/play.`,
                 ),
+                // Send pusher events to all players (except the current one)
+                ...game.players
+                    .filter((player: IPlayer) => player.user_id !== user.user_id)
+                    .map((player: IPlayer) =>
+                        pusher.sendMessageByPlayerId(
+                            player.user_id, gameId as string, pusher.Event.GameUpdated,
+                        ),
+                    ),
             ]);
         } catch (error) {
             console.error(error);

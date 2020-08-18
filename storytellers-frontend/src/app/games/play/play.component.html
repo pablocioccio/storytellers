@@ -8,13 +8,16 @@
   </blockquote>
 
   <div class="input-group mb-3">
-    <div class="input-group-prepend" *ngIf="game.currentPhraseNumber > 0">
-      <span class="input-group-text text-wrap notranslate">... {{game.firstWords}}</span>
+    <div id="previousWords" class="border border-bottom-0 rounded-top p-2">
+      <p class="text-break font-weight-bold m-0">
+        ... {{game.firstWords}}
+      </p>
     </div>
-    <textarea id="text" class="form-control"
+    <textarea id="text" class="form-control border rounded-bottom" appExpandTextarea
       [class.is-invalid]="gameForm.controls['text'].errors && (gameForm.controls['text'].dirty || gameForm.controls['text'].touched)"
       [class.is-valid]="gameForm.controls['text'].valid && (gameForm.controls['text'].dirty || gameForm.controls['text'].touched)"
-      formControlName="text" aria-label="Text area" [placeholder]="calculatePlaceholderText()"></textarea>
+      formControlName="text" aria-label="Text area" [placeholder]="calculatePlaceholderText()">
+    </textarea>
     <div class="invalid-feedback">
       <ng-container *ngIf="gameForm.controls['text'].errors?.minWords">
         You need at least
@@ -34,7 +37,7 @@
     </div>
   </div>
 
-  <div #lastWordsContainerTooltip="ngbTooltip" *ngIf="!isLastPlayer"
+  <div #lastWordsContainerTooltip="ngbTooltip" *ngIf="!isLastPlayer" id="lastWords"
     class="shadow text-right text-break bg-white rounded border border-info notranslate p-3 mb-3"
     ngbTooltip="This is what the next player will see" triggers="manual">
     ... {{gameForm.value.lastWords}}

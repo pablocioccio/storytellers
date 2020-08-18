@@ -6,3 +6,45 @@
   border-bottom-width: 0px;
   border-top-width: 0px;
 }
+
+#previousWords {
+  width: 100%;
+  min-height: 1em;
+  max-height: 25vh;
+  overflow: auto;
+  scrollbar-width: thin;
+  background-color: #f8f9fa;
+}
+
+#text {
+  width: 100%;
+  min-height: 5em;
+  max-height: 35vh;
+  overflow: auto;
+  scrollbar-width: thin;
+}
+
+#lastWords {
+  width: 100%;
+  min-height: 1em;
+  max-height: 25vh;
+  overflow: auto;
+  scrollbar-width: thin;
+}
+
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+::-webkit-scrollbar-track {
+  border-radius: 30px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #d5d4d9;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #606169;
+}

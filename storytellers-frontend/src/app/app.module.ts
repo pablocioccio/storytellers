@@ -19,6 +19,7 @@ import { ProfileComponent } from './profile/profile.component';
 import { UpdateComponent } from './service-worker/update/update.component';
 import { SpinnerComponent } from './spinner/spinner.component';
 import { WelcomeComponent } from './welcome/welcome.component';
+import { ExpandTextareaDirective } from './games/play/expand-textarea.directive';
 
 @NgModule({
   declarations: [
@@ -34,6 +35,7 @@ import { WelcomeComponent } from './welcome/welcome.component';
     DashboardComponent,
     UpdateComponent,
     InvitationComponent,
+    ExpandTextareaDirective,
   ],
   imports: [
     BrowserModule,

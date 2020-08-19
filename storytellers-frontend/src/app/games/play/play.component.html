@@ -8,15 +8,17 @@
   </blockquote>
 
   <div class="input-group mb-3">
-    <div id="previousWords" class="border border-bottom-0 rounded-top p-2">
+    <div id="previousWords" *ngIf="game.currentPhraseNumber > 0"
+      class="border border-dark border-bottom-0 rounded-top text-right p-2">
       <p class="text-break font-weight-bold m-0">
         ... {{game.firstWords}}
       </p>
     </div>
-    <textarea id="text" class="form-control border rounded-bottom" appExpandTextarea
+    <textarea id="text" class="form-control border border border-dark rounded-bottom" formControlName="text"
       [class.is-invalid]="gameForm.controls['text'].errors && (gameForm.controls['text'].dirty || gameForm.controls['text'].touched)"
       [class.is-valid]="gameForm.controls['text'].valid && (gameForm.controls['text'].dirty || gameForm.controls['text'].touched)"
-      formControlName="text" aria-label="Text area" [placeholder]="calculatePlaceholderText()">
+      [class.rounded-top]="game.currentPhraseNumber === 0" aria-label="Text area"
+      [placeholder]="calculatePlaceholderText()" appExpandTextarea>
     </textarea>
     <div class="invalid-feedback">
       <ng-container *ngIf="gameForm.controls['text'].errors?.minWords">

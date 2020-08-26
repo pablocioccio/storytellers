@@ -44,12 +44,13 @@
       <caption *ngIf="game.completed">Hover or tap on a player to see what they wrote</caption>
       <thead>
         <tr class="thead-dark" *ngIf="game.invitations">
-          <th colspan="3" class="text-center">Current players</th>
+          <th colspan="4" class="text-center">Current players</th>
         </tr>
         <tr [class.table-info]="game.invitations" [class.thead-dark]="!game.invitations">
           <th>#</th>
           <th>Avatar</th>
           <th>Name</th>
+          <th>Email</th>
         </tr>
       </thead>
       <tbody>
@@ -61,6 +62,7 @@
               onerror="this.onerror=null;this.src='assets/images/profile.svg';">
           </td>
           <td>{{player.name}}</td>
+          <td>{{player.email}}</td>
         </tr>
       </tbody>
     </table>

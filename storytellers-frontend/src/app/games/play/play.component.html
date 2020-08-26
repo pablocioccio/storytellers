@@ -52,6 +52,7 @@
           <th scope="col">#</th>
           <th scope="col">Avatar</th>
           <th scope="col">Name</th>
+          <th scope="col">Email</th>
         </tr>
       </thead>
       <tbody>
@@ -60,6 +61,7 @@
           <td><img [src]="player.picture" class="rounded-circle" width="40px;"
               onerror="this.onerror=null;this.src='assets/images/profile.svg';"></td>
           <td>{{player.name}}</td>
+          <td>{{player.email}}</td>
         </tr>
       </tbody>
     </table>

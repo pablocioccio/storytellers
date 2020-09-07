@@ -1,8 +1,13 @@
 <app-update (swUpdateAvailable)="blurBackground($event)"></app-update>
 <app-spinner></app-spinner>
-<div [class.update-overlay]="swUpdateAvailable" class="pete">
-  <app-navbar></app-navbar>
-  <div class="container-fluid shadow p-3 mb-5 bg-white rounded">
-    <router-outlet></router-outlet>
-  </div>
+<div [class.update-overlay]="swUpdateAvailable" class="d-flex flex-column vh-100">
+  <header>
+    <app-navbar></app-navbar>
+  </header>
+  <main role="main" class="flex-shrink-0">
+    <div class="container-fluid p-3">
+      <router-outlet></router-outlet>
+    </div>
+  </main>
+  <app-footer class="mt-auto"></app-footer>
 </div>

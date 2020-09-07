@@ -9,9 +9,11 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { CallbackComponent } from './authentication/callback/callback.component';
 import { InterceptorService } from './authentication/interceptor.service';
+import { FooterComponent } from './footer/footer.component';
 import { CreateComponent } from './games/create/create.component';
 import { DashboardComponent } from './games/dashboard/dashboard.component';
 import { InvitationComponent } from './games/invitation/invitation.component';
+import { ExpandTextareaDirective } from './games/play/expand-textarea.directive';
 import { PlayComponent } from './games/play/play.component';
 import { ViewComponent } from './games/view/view.component';
 import { NavbarComponent } from './navbar/navbar.component';
@@ -19,7 +21,6 @@ import { ProfileComponent } from './profile/profile.component';
 import { UpdateComponent } from './service-worker/update/update.component';
 import { SpinnerComponent } from './spinner/spinner.component';
 import { WelcomeComponent } from './welcome/welcome.component';
-import { ExpandTextareaDirective } from './games/play/expand-textarea.directive';
 
 @NgModule({
   declarations: [
@@ -36,6 +37,7 @@ import { ExpandTextareaDirective } from './games/play/expand-textarea.directive'
     UpdateComponent,
     InvitationComponent,
     ExpandTextareaDirective,
+    FooterComponent,
   ],
   imports: [
     BrowserModule,

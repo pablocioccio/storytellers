@@ -7,6 +7,7 @@ import { DashboardComponent } from './games/dashboard/dashboard.component';
 import { InvitationComponent } from './games/invitation/invitation.component';
 import { PlayComponent } from './games/play/play.component';
 import { ViewComponent } from './games/view/view.component';
+import { PrivacyPolicyComponent } from './legal/privacy-policy/privacy-policy.component';
 import { ProfileComponent } from './profile/profile.component';
 import { WelcomeComponent } from './welcome/welcome.component';
 
@@ -48,6 +49,10 @@ const routes: Routes = [
   {
     path: 'welcome',
     component: WelcomeComponent
+  },
+  {
+    path: 'legal/privacy-policy',
+    component: PrivacyPolicyComponent
   },
   {
     path: '',

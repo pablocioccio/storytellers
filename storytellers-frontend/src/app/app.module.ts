@@ -16,6 +16,7 @@ import { InvitationComponent } from './games/invitation/invitation.component';
 import { ExpandTextareaDirective } from './games/play/expand-textarea.directive';
 import { PlayComponent } from './games/play/play.component';
 import { ViewComponent } from './games/view/view.component';
+import { LegalModule } from './legal/legal.module';
 import { NavbarComponent } from './navbar/navbar.component';
 import { ProfileComponent } from './profile/profile.component';
 import { UpdateComponent } from './service-worker/update/update.component';
@@ -45,6 +46,7 @@ import { WelcomeComponent } from './welcome/welcome.component';
     HttpClientModule,
     FormsModule,
     NgbModule,
+    LegalModule,
     ReactiveFormsModule,
     ServiceWorkerModule.register('custom-ngsw-worker.js', { enabled: environment.production })
   ],

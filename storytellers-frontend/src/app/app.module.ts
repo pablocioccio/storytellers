@@ -18,7 +18,6 @@ import { PlayComponent } from './games/play/play.component';
 import { ViewComponent } from './games/view/view.component';
 import { LegalModule } from './legal/legal.module';
 import { NavbarComponent } from './navbar/navbar.component';
-import { ProfileComponent } from './profile/profile.component';
 import { UpdateComponent } from './service-worker/update/update.component';
 import { SpinnerComponent } from './spinner/spinner.component';
 import { WelcomeComponent } from './welcome/welcome.component';
@@ -28,7 +27,6 @@ import { WelcomeComponent } from './welcome/welcome.component';
     AppComponent,
     NavbarComponent,
     CallbackComponent,
-    ProfileComponent,
     CreateComponent,
     WelcomeComponent,
     PlayComponent,

@@ -8,18 +8,12 @@ import { InvitationComponent } from './games/invitation/invitation.component';
 import { PlayComponent } from './games/play/play.component';
 import { ViewComponent } from './games/view/view.component';
 import { PrivacyPolicyComponent } from './legal/privacy-policy/privacy-policy.component';
-import { ProfileComponent } from './profile/profile.component';
 import { WelcomeComponent } from './welcome/welcome.component';
 
 const routes: Routes = [
   {
     path: 'callback',
     component: CallbackComponent
-  },
-  {
-    path: 'profile',
-    component: ProfileComponent,
-    canActivate: [AuthGuard]
   },
   {
     path: 'games/dashboard',

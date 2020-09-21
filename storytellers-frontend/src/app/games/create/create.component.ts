@@ -43,10 +43,10 @@ export class CreateComponent implements OnInit, OnDestroy {
     }));
     // Subscribe to the error subject, so that the error message is updated every time it emits a value
     this.subscription.add(this.errorSubject.subscribe((message) => this.errorMessage = message));
-    // Subscribe again to the error subject, but adding a 5000 ms delay before the previous error message is cleared
+    // Subscribe again to the error subject, but adding a 10000 ms delay before the previous error message is cleared
     this.subscription.add(
       this.errorSubject.pipe(
-        debounceTime(5000)
+        debounceTime(10000)
       ).subscribe(() => this.errorMessage = null)
     );
   }

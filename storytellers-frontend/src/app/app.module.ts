@@ -21,6 +21,7 @@ import { NavbarComponent } from './navbar/navbar.component';
 import { UpdateComponent } from './service-worker/update/update.component';
 import { SpinnerComponent } from './spinner/spinner.component';
 import { WelcomeComponent } from './welcome/welcome.component';
+import { BlockComponent } from './notifications/block/block.component';
 
 @NgModule({
   declarations: [
@@ -37,6 +38,7 @@ import { WelcomeComponent } from './welcome/welcome.component';
     InvitationComponent,
     ExpandTextareaDirective,
     FooterComponent,
+    BlockComponent,
   ],
   imports: [
     BrowserModule,

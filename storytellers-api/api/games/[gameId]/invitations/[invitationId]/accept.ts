@@ -109,11 +109,8 @@ export default async (request: NowRequest, response: NowResponse) => {
                     if (email) {
                         // Send email and web push notification to the creator
                         promises.push(notificationManager.sendNextTurnNotifications(game.players[0], game));
-                        promises.push(emailManager.sendEmail(
-                            game.players[0].email,
-                            `It's your turn in ${game.title.toUpperCase()}`,
-                            `Hi ${game.players[0].name}. You are up next in "${game.title}".\n\n` +
-                            `Follow this link to play: ${process.env.frontend_url}/games/${gameId}/play.`,
+                        promises.push(emailManager.notifyNextTurn(
+                            game.players[0].email, game.players[0].name, game.title, gameId as string,
                         ));
                     }
                     await Promise.all(promises);

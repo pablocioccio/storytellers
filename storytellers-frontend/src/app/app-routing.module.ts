@@ -8,6 +8,7 @@ import { InvitationComponent } from './games/invitation/invitation.component';
 import { PlayComponent } from './games/play/play.component';
 import { ViewComponent } from './games/view/view.component';
 import { PrivacyPolicyComponent } from './legal/privacy-policy/privacy-policy.component';
+import { BlockComponent } from './notifications/block/block.component';
 import { WelcomeComponent } from './welcome/welcome.component';
 
 const routes: Routes = [
@@ -47,6 +48,10 @@ const routes: Routes = [
   {
     path: 'legal/privacy-policy',
     component: PrivacyPolicyComponent
+  },
+  {
+    path: 'notifications/:id/block',
+    component: BlockComponent
   },
   {
     path: '',

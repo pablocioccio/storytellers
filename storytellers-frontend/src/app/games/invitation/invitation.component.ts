@@ -115,7 +115,7 @@ export class InvitationComponent implements OnInit, OnDestroy {
         this.router.navigate([`/games/${this.game.id}`]);
       }, (error) => {
         this.errorMessage = error.message ? error.message : 'There was problem accepting the invitation';
-        setTimeout(() => this.errorMessage = null, 5000);
+        setTimeout(() => this.errorMessage = null, 10000);
         this.responseStatus = null;
       })
     );
@@ -128,7 +128,7 @@ export class InvitationComponent implements OnInit, OnDestroy {
         this.router.navigate(['/games/dashboard']);
       }, (error) => {
         this.errorMessage = error.message ? error.message : 'There was a problem rejecting the invitation';
-        setTimeout(() => this.errorMessage = null, 5000);
+        setTimeout(() => this.errorMessage = null, 10000);
         this.responseStatus = null;
       })
     );

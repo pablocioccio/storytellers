@@ -1,0 +1,26 @@
+<div class="container">
+  <ngb-alert *ngIf="errorMessage" [type]="'danger'" [dismissible]="false">{{ errorMessage }}</ngb-alert>
+  <div class="card text-center">
+    <div class="card-header">
+      Storytellers
+    </div>
+    <div class="card-body">
+      <h5 class="card-title">Unsubscribe from email notifications?</h5>
+      <div class="card-text">
+        <p> By unsubscribing from email notifications, other players will not be able to invite you to new games.</p>
+        <p>You will still be able to create your own and invite others.</p>
+        <p>Do you want to proceed?</p>
+      </div>
+      <button type="button" class="btn btn-primary m-2" [disabled]="responseStatus" (click)="accept()">
+        <span *ngIf="responseStatus === 'yes'" class="spinner-border spinner-border-sm" role="status"
+          aria-hidden="true"></span>
+        Yes
+      </button>
+      <button type="button" class="btn btn-primary m-2" [disabled]="responseStatus" (click)="reject()">
+        <span *ngIf="responseStatus === 'no'" class="spinner-border spinner-border-sm" role="status"
+          aria-hidden="true"></span>
+        No
+      </button>
+    </div>
+  </div>
+</div>

@@ -1,7 +1,6 @@
 import { NowRequest, NowResponse } from '@vercel/node';
 import authenticator = require('../../../../../lib/authenticator');
 import * as dbManager from '../../../../../lib/database';
-import * as emailManager from '../../../../../lib/email';
 import * as notificationManager from '../../../../../lib/notification';
 import * as pusher from '../../../../../lib/pusher';
 import { IGame } from '../../../../../model/game';
@@ -69,20 +68,12 @@ export default async (request: NowRequest, response: NowResponse) => {
                 if (!game.invitations) {
                     // Create an object to update multiple elements at once
                     const updates: { [key: string]: any } = {};
-                    // Prepare en email for the creator
-                    let email: { recipient: string, subject: string, message: string };
                     let readyToStart = false;
                     if (game.players.length === 1) {
                         // The only player left is the creator, so the game will be deleted
                         pusherEvent = pusher.Event.GameDeleted;
                         updates[`/games/${gameId}`] = null;
                         updates[`/user-games/${game.players[0].user_id}/${gameId}`] = null;
-                        email = {
-                            message: `You have withdrawn the last invitation to "${game.title}", ` +
-                                `and since you are the only player left, the game will be deleted.`,
-                            recipient: game.players[0].email,
-                            subject: `${game.title.toUpperCase()} will be deleted`,
-                        };
                     } else {
                         // The game is ready to start, so we initialize the game data
                         readyToStart = true;
@@ -94,19 +85,9 @@ export default async (request: NowRequest, response: NowResponse) => {
                             };
                         }
                         updates[`/game-data/${gameId}`] = gameData;
-                        email = {
-                            message: `The last invitation to "${game.title}" was withdrawn, and the game is ready to start.\n\n` +
-                                `Follow this link to play: ${process.env.frontend_url}/games/${gameId}/play.`,
-                            recipient: game.players[0].email,
-                            subject: `${game.title.toUpperCase()} is ready to start!`,
-                        };
                     }
                     try {
-                        // Perform the update and send an email to the creator
-                        const promises = [
-                            database.ref().update(updates),
-                            emailManager.sendEmail(email.recipient, email.subject, email.message),
-                        ];
+                        const promises = [database.ref().update(updates)];
                         // Send a push notification if the game is ready to start
                         if (readyToStart) {
                             promises.push(notificationManager.sendNextTurnNotifications(game.players[0], game));

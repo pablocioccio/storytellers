@@ -88,12 +88,7 @@ export default async (request: NowRequest, response: NowResponse) => {
                 ...game.players
                     .filter((player: IPlayer) => player.user_id !== user.user_id)
                     .map((player: IPlayer) =>
-                        emailManager.sendEmail(
-                            player.email,
-                            `${game.title.toUpperCase()} is finished!`,
-                            `Hi ${player.name}! The game "${game.title}" has just finished.\n\n` +
-                            `Follow this link to see how you and your friends fared: ${process.env.frontend_url}/games/${gameId}.`,
-                        ),
+                        emailManager.notifyGameFinished(player.email, player.name, game.title, gameId as string),
                     ),
                 // Send pusher events to all players (except the current one)
                 ...game.players
@@ -123,12 +118,7 @@ export default async (request: NowRequest, response: NowResponse) => {
                 // Send web push notification to the next player
                 notificationManager.sendNextTurnNotifications(nextPlayer, game),
                 // Send an email to the next player
-                emailManager.sendEmail(
-                    nextPlayer.email,
-                    `It's your turn in ${game.title.toUpperCase()}`,
-                    `Hi ${nextPlayer.name}. You are up next in "${game.title}".\n\n` +
-                    `Follow this link to play: ${process.env.frontend_url}/games/${gameId}/play.`,
-                ),
+                emailManager.notifyNextTurn(nextPlayer.email, nextPlayer.name, game.title, gameId as string),
                 // Send pusher events to all players (except the current one)
                 ...game.players
                     .filter((player: IPlayer) => player.user_id !== user.user_id)

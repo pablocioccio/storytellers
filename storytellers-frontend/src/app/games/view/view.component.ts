@@ -153,7 +153,7 @@ export class ViewComponent implements OnInit, OnDestroy {
       }, (error) => {
         this.invitationWithdrawn.splice(this.invitationWithdrawn.indexOf(invitationId), 1);
         this.errorMessage = error.message ? error.message : `There was a problem withdrawing the invitation`;
-        setTimeout(() => this.errorMessage = null, 5000);
+        setTimeout(() => this.errorMessage = null, 10000);
       })
     );
   }

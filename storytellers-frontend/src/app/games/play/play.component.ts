@@ -45,7 +45,7 @@ export class PlayComponent implements OnInit, OnDestroy {
       tooltip.open();
       setTimeout(() => {
         tooltip.close();
-      }, 5000);
+      }, 10000);
     }
   }
 
@@ -129,7 +129,7 @@ export class PlayComponent implements OnInit, OnDestroy {
         this.router.navigate(['/games/dashboard']);
       }, (error) => {
         this.errorMessage = error.message ? error.message : 'There was problem posting the phrase';
-        setTimeout(() => this.errorMessage = null, 5000);
+        setTimeout(() => this.errorMessage = null, 10000);
         this.postSubmitted = false;
       });
   }

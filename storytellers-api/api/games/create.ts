@@ -35,6 +35,15 @@ export default async (request: NowRequest, response: NowResponse) => {
         }
     }
 
+    // Check for invitations on the blocklist
+    const blocklisted = await emailManager.checkBlocklist(request.body.invitations);
+    if (blocklisted.length) {
+        const message = `The following users opted out of receiving emails from Storytellers: ${blocklisted}`;
+        console.error(message);
+        response.status(400).json({ message });
+        return;
+    }
+
     // Get database manager
     const database = dbManager.getDatabase();
 
@@ -90,12 +99,8 @@ export default async (request: NowRequest, response: NowResponse) => {
         await Promise.all([
             database.ref().update(updates),
             ...Object.entries(invitations).map(([invitationKey, invitation]) => {
-                return emailManager.sendEmail(
-                    invitation.email,
-                    `${creator.name} invited you to Storytellers!`,
-                    `Hi! ${creator.name} wants you to be part of "${game.title}".\n\n` +
-                    `Follow this link to see your invitation: ${process.env.frontend_url}/games/${newGameKey}/invitation/${invitationKey}`,
-                );
+                return emailManager.sendInvitation(
+                    invitation.email, creator.name, game.title, newGameKey, invitationKey);
             }),
         ]);
     } catch (error) {

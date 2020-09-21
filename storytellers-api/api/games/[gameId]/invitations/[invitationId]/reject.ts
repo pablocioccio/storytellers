@@ -65,25 +65,19 @@ export default async (request: NowRequest, response: NowResponse) => {
                 let pusherEvent = pusher.Event.GameUpdated;
                 // Was it the last invitation?
                 if (!game.invitations) {
+                    const promises = [];
                     // Create an object to update multiple elements at once
                     const updates: { [key: string]: any } = {};
-                    // Prepare en email for the creator
-                    let email: { recipient: string, subject: string, message: string };
-                    let readyToStart = false;
                     if (game.players.length === 1) {
                         // The only player left is the creator, so the game will be deleted
                         pusherEvent = pusher.Event.GameDeleted;
                         updates[`/games/${gameId}`] = null;
                         updates[`/user-games/${game.players[0].user_id}/${gameId}`] = null;
-                        email = {
-                            message: `The last invitation to "${game.title}" was rejected, ` +
-                                `and since you are the only player left, the game will be deleted.`,
-                            recipient: game.players[0].email,
-                            subject: `All invitations to ${game.title.toUpperCase()} were rejected`,
-                        };
+                        promises.push(emailManager.notifyAllInvitationsRejected(
+                            game.players[0].email, game.players[0].name, game.title,
+                        ));
                     } else {
                         // The game is ready to start, so we initialize the game data
-                        readyToStart = true;
                         const gameData: { [key: number]: { phrase: string, lastWords: string } } = {};
                         for (let i = 0; i < game.rounds * Object.keys(game.players).length; i++) {
                             gameData[i] = {
@@ -92,23 +86,15 @@ export default async (request: NowRequest, response: NowResponse) => {
                             };
                         }
                         updates[`/game-data/${gameId}`] = gameData;
-                        email = {
-                            message: `The last invitation to "${game.title}" was rejected, and the game is ready to start.\n\n` +
-                                `Follow this link to play: ${process.env.frontend_url}/games/${gameId}/play.`,
-                            recipient: game.players[0].email,
-                            subject: `${game.title.toUpperCase()} is ready to start!`,
-                        };
+                        // Send an email notification
+                        promises.push(emailManager.notifyNextTurn(
+                            game.players[0].email, game.players[0].name, game.title, gameId as string,
+                        ));
+                        // Send a push notification
+                        promises.push(notificationManager.sendNextTurnNotifications(game.players[0], game));
                     }
                     try {
-                        // Perform the update and send an email to the creator
-                        const promises = [
-                            database.ref().update(updates),
-                            emailManager.sendEmail(email.recipient, email.subject, email.message),
-                        ];
-                        // Send a push notification if the game is ready to start
-                        if (readyToStart) {
-                            promises.push(notificationManager.sendNextTurnNotifications(game.players[0], game));
-                        }
+                        promises.push(database.ref().update(updates));
                         await Promise.all(promises);
                     } catch (error) {
                         console.error(

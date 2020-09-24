@@ -20,7 +20,6 @@ import { LegalModule } from './legal/legal.module';
 import { NavbarComponent } from './navbar/navbar.component';
 import { BlockComponent } from './notifications/block/block.component';
 import { StatusComponent } from './notifications/status/status.component';
-import { UpdateComponent } from './service-worker/update/update.component';
 import { SpinnerComponent } from './spinner/spinner.component';
 import { WelcomeComponent } from './welcome/welcome.component';
 
@@ -35,7 +34,6 @@ import { WelcomeComponent } from './welcome/welcome.component';
     SpinnerComponent,
     ViewComponent,
     DashboardComponent,
-    UpdateComponent,
     InvitationComponent,
     ExpandTextareaDirective,
     FooterComponent,

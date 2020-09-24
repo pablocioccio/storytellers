@@ -7,6 +7,6 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
 ```
 npm i -g http-server
 ng build --prod
-cd dist/storytellers-frontend
+cd dist/storytellers
 http-server -p 4200 --proxy http://localhost:3000
 ```

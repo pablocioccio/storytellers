@@ -1,0 +1,22 @@
+<div *ngIf="status === 'block'" role="alert"
+  class="alert alert-danger d-flex justify-content-between align-items-center border-0 rounded-0">
+  <span>Email notifications are blocked.</span>
+  <button type="button" class="btn btn-success btn-sm" [disabled]="responseSubmitted || errorMessage" (click)="allow()">
+    <span *ngIf="responseSubmitted" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+    Allow
+  </button>
+</div>
+<div class="error-toast" *ngIf="errorMessage">
+  <ngb-toast delay="5000" (hide)="dismissError()" header="Storytellers"
+    class="bg-dark text-white border border-secondary mx-2">
+    <div class="container">
+      <div class="d-flex align-items-center justify-content-center">
+        <img src="assets/images/error_button.png" height="96" width="96">
+        <div><strong>{{errorMessage}}</strong></div>
+      </div>
+    </div>
+    <div class="d-flex align-items-center justify-content-center">
+      <button (click)="dismissError()" class="btn btn-primary"> OK </button>
+    </div>
+  </ngb-toast>
+</div>

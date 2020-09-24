@@ -7,7 +7,6 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Pablo N. Cioccio",
-  "license": "ISC",
   "dependencies": {
     "@firebase/app": "^0.6.9",
     "@types/nodemailer": "^6.4.0",

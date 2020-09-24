@@ -18,10 +18,11 @@ import { PlayComponent } from './games/play/play.component';
 import { ViewComponent } from './games/view/view.component';
 import { LegalModule } from './legal/legal.module';
 import { NavbarComponent } from './navbar/navbar.component';
+import { BlockComponent } from './notifications/block/block.component';
+import { StatusComponent } from './notifications/status/status.component';
 import { UpdateComponent } from './service-worker/update/update.component';
 import { SpinnerComponent } from './spinner/spinner.component';
 import { WelcomeComponent } from './welcome/welcome.component';
-import { BlockComponent } from './notifications/block/block.component';
 
 @NgModule({
   declarations: [
@@ -39,6 +40,7 @@ import { BlockComponent } from './notifications/block/block.component';
     ExpandTextareaDirective,
     FooterComponent,
     BlockComponent,
+    StatusComponent,
   ],
   imports: [
     BrowserModule,

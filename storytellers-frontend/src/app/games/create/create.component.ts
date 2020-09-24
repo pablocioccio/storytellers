@@ -92,7 +92,7 @@ export class CreateComponent implements OnInit, OnDestroy {
         }
       }, (error) => {
         this.errorMessage = null;
-        this.errorSubject.next(error.message ? error.message : 'There was an error creating the game.');
+        this.errorSubject.next(error.message ? error.message : 'There was a problem creating the game.');
         this.gameCreationSubmitted = false;
       })
     );

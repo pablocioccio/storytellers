@@ -21,3 +21,4 @@
     <button class="btn btn btn-outline-info my-2 my-sm-0" (click)="auth.logout()" *ngIf="auth.loggedIn">Log Out</button>
   </ng-container>
 </nav>
+<app-status *ngIf="auth.loggedIn"></app-status>
